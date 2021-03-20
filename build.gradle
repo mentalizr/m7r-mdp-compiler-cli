@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'org.mentalizr'
-version '0.1-SNAPSHOT'
+version = rootProject.file('version').text.trim()
 
 repositories {
     mavenCentral()
@@ -19,4 +19,24 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+task extractDependencies(type: Copy, dependsOn: jar) {
+    from configurations.runtimeClasspath
+    into "$buildDir/dependencies"
+}
+
+task fatJar(type: Jar, dependsOn: extractDependencies) {
+    manifest {
+        attributes 'Main-Class': 'org.mentalizr.mdpCompilerCli.MdpCompilerCli'
+        attributes 'Version': project.property("version")
+        attributes 'Build' : new Date().format('yyyyMMddHHmmss')
+    }
+    from {
+        file("$buildDir/dependencies").listFiles().collect { zipTree(it) }
+    }
+    from {
+        file("$buildDir/libs").listFiles().collect { zipTree(it) }
+    }
+    destinationDirectory.set(file("$buildDir/fatjar"))
 }
