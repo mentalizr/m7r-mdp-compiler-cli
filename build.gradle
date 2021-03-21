@@ -28,7 +28,7 @@ task extractDependencies(type: Copy, dependsOn: jar) {
 
 task fatJar(type: Jar, dependsOn: extractDependencies) {
     manifest {
-        attributes 'Main-Class': 'org.mentalizr.mdpCompilerCli.MdpCompilerCli'
+        attributes 'Main-Class': 'org.mentalizr.mdpContentManagerCli.MdpContentManagerCli'
         attributes 'Version': project.property("version")
         attributes 'Build' : new Date().format('yyyyMMddHHmmss')
     }

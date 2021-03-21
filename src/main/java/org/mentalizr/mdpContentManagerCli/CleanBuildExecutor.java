@@ -1,4 +1,4 @@
-package org.mentalizr.mdpCompilerCli;
+package org.mentalizr.mdpContentManagerCli;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;

@@ -1,4 +1,4 @@
-rootProject.name = 'm7r-mdp-compiler-cli'
+rootProject.name = 'm7r-content-manager-cli'
 
 includeBuild('../m7r-content-manager')
 includeBuild('../m7r-service-objects')

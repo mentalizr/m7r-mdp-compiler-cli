@@ -1,4 +1,4 @@
-package org.mentalizr.mdpCompilerCli;
+package org.mentalizr.mdpContentManagerCli;
 
 import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.CommandSequenceBuilder;
@@ -11,7 +11,7 @@ import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 
-public class MdpCompilerCli {
+public class MdpContentManagerCli {
 
     public static final String OPTION_STACKTRACE = "stacktrace";
     public static final String OPTION_CONTENT_ROOT = "content_root";
@@ -39,10 +39,10 @@ public class MdpCompilerCli {
         );
 
         CliDescription cliDescription = new CliDescriptionBuilder()
-                .withDescription("The mdp compiler.\nhttps://github.com/mentalizr/m7r-mdp-compiler-cli")
+                .withDescription("The mentalizr content manager CLI.\nhttps://github.com/mentalizr/m7r-content-manager-cli")
                 .withVersion("0.1-SNAPSHOT")
-                .withDate("2021-03-20")
-                .build("mdpc2");
+                .withDate("2021-03-21")
+                .build("m7r-cm");
 
         return new CliBuilder()
                 .withGlobalOptions(globalOptions)
