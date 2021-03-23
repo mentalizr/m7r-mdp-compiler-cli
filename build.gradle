@@ -11,6 +11,10 @@ repositories {
 }
 
 dependencies {
+
+    implementation 'org.mentalizr:m7r-content-manager:0.1-SNAPSHOT'
+    implementation 'org.mentalizr:mdp-compiler:0.0.9-SNAPSHOT'
+
     implementation 'com.github.arthurpicht:cli:095ef699d1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
@@ -28,7 +32,7 @@ task extractDependencies(type: Copy, dependsOn: jar) {
 
 task fatJar(type: Jar, dependsOn: extractDependencies) {
     manifest {
-        attributes 'Main-Class': 'org.mentalizr.mdpContentManagerCli.MdpContentManagerCli'
+        attributes 'Main-Class': 'org.mentalizr.contentManagerCli.ContentManagerCli'
         attributes 'Version': project.property("version")
         attributes 'Build' : new Date().format('yyyyMMddHHmmss')
     }

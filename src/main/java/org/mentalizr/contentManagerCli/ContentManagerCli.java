@@ -1,4 +1,4 @@
-package org.mentalizr.mdpContentManagerCli;
+package org.mentalizr.contentManagerCli;
 
 import de.arthurpicht.cli.*;
 import de.arthurpicht.cli.command.CommandSequenceBuilder;
@@ -10,8 +10,13 @@ import de.arthurpicht.cli.option.OptionBuilder;
 import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
+import de.arthurpicht.cli.parameter.ParametersOne;
+import org.mentalizr.contentManagerCli.executors.BuildExecutor;
+import org.mentalizr.contentManagerCli.executors.CleanBuildExecutor;
+import org.mentalizr.contentManagerCli.executors.CompileExecutor;
+import org.mentalizr.contentManagerCli.executors.ShowExecutor;
 
-public class MdpContentManagerCli {
+public class ContentManagerCli {
 
     public static final String OPTION_STACKTRACE = "stacktrace";
     public static final String OPTION_CONTENT_ROOT = "content_root";
@@ -31,10 +36,34 @@ public class MdpContentManagerCli {
         commands.setDefaultCommand(new InfoDefaultCommand());
 
         commands.add(new CommandSequenceBuilder()
+                .addCommands("build")
+                .withParameters(new ParametersMin(0, "program", "programs to be built"))
+                .withCommandExecutor(new BuildExecutor())
+                .withDescription("Executes a build on specified programs or on all programs if none is specified.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
                 .addCommands("clean", "build")
                 .withParameters(new ParametersMin(0, "program", "programs to be built"))
                 .withCommandExecutor(new CleanBuildExecutor())
                 .withDescription("Executes a clean build on specified programs or on all programs if none is specified.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("show")
+                .withParameters(new ParametersMin(0, "program", "programs to be built"))
+                .withCommandExecutor(new ShowExecutor())
+                .withDescription("Shows program structure for specified programs or for all programs if none is specified.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("compile")
+                .withParameters(new ParametersOne("content-id", "content id of mdp file to be compiled"))
+                .withCommandExecutor(new CompileExecutor())
+                .withDescription("Compiles a single mdp file with no impact for the repo state and for development purposes only.")
                 .build()
         );
 
@@ -58,7 +87,7 @@ public class MdpContentManagerCli {
         try {
             cliCall = cli.parse(args);
         } catch (UnrecognizedArgumentException e) {
-            System.out.println("mdpc call syntax error. " + e.getMessage());
+            System.out.println(e.getExecutableName() + " call syntax error. " + e.getMessage());
             System.out.println(e.getCallString());
             System.out.println(e.getCallPointerString());
             System.exit(1);
@@ -69,7 +98,7 @@ public class MdpContentManagerCli {
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
-            System.out.println("mdpc command execution error. " + e.getMessage());
+            System.out.println(cliCall.getCliDefinition().getCliDescription().getExecutableName() + " command execution error. " + e.getMessage());
             if (showStacktrace) e.printStackTrace();
             System.exit(1);
         }
