@@ -1,34 +1,48 @@
 package org.mentalizr.contentManagerCli;
 
+import de.arthurpicht.cli.CommandExecutorException;
+import org.mentalizr.contentManager.fileHierarchy.basics.Naming;
+import org.mentalizr.contentManager.helper.Nio2Helper;
+import org.mentalizr.contentManager.helper.PathAssertions;
+
+import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramDirs {
 
-    public static Path getProgramDir(Path contentRootDir, String programName) throws ContentManagerCliException {
+    public static List<Path> getProgramDirs(Path contentRootDir, List<String> programNames) {
+        List<Path> programPaths = new ArrayList<>();
+        for (String programName : programNames) {
+            programPaths.add(getProgramDir(contentRootDir, programName));
+        }
+        return programPaths;
+    }
 
-        Nio2Helper.assertExistingDir(contentRootDir);
-
-        if (Paths.get(programName).getNameCount() != 1)
-            throw new ContentManagerCliException("Illegal program name: [" + programName + "]");
-
+    public static Path getProgramDir(Path contentRootDir, String programName) {
+        Naming.assertValidProgramName(programName);
         Path programPath = contentRootDir.resolve(programName);
-
-        Nio2Helper.assertExistingDir(programPath);
-
+        PathAssertions.assertIsDirectSubdirectory(contentRootDir, programPath);
         return programPath;
     }
 
-    public static List<Path> getAllProgrammDirs(Path contentRootDir) {
+    public static List<Path> getAllProgramDirs(Path contentRootDir) throws CommandExecutorException {
+        PathAssertions.assertIsExistingDirectory(contentRootDir);
+        return getCheckedSubdirectories(contentRootDir);
+    }
 
-        // TODO
-
-
-        return new ArrayList<>();
-
-
+    private static List<Path> getCheckedSubdirectories(Path dir) throws CommandExecutorException {
+        try {
+            List<Path> programDirs = Nio2Helper.getSubdirectories(dir);
+            for (Path programDir : programDirs) {
+                String programName = programDir.getFileName().toString();
+                Naming.assertValidProgramName(programName);
+            }
+            return programDirs;
+        } catch (IOException e) {
+            throw new CommandExecutorException("Error when accessing file system. " + e.getMessage(), e);
+        }
     }
 
 }

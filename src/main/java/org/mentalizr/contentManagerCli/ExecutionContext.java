@@ -1,6 +1,7 @@
 package org.mentalizr.contentManagerCli;
 
 import de.arthurpicht.cli.CliCall;
+import org.mentalizr.contentManager.helper.PathAssertions;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +17,7 @@ public class ExecutionContext {
         if (cliCall.getOptionParserResultGlobal().hasOption(OPTION_CONTENT_ROOT)) {
             String contentRoot = cliCall.getOptionParserResultGlobal().getValue(OPTION_CONTENT_ROOT);
             this.contentRootPath = Paths.get(contentRoot).toAbsolutePath();
-            Nio2Helper.assertExistingDir(this.contentRootPath);
+            PathAssertions.assertIsExistingDirectory(this.contentRootPath);
         } else {
             this.contentRootPath = Path.of("").toAbsolutePath();
         }
