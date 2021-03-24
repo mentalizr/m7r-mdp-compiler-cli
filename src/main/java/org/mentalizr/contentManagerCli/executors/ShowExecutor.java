@@ -1,27 +1,16 @@
 package org.mentalizr.contentManagerCli.executors;
 
-import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
-import de.arthurpicht.cli.CommandExecutorException;
+import org.mentalizr.contentManager.Program;
+import org.mentalizr.contentManager.exceptions.ProgramManagerException;
+import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
 
-import java.util.List;
-
-public class ShowExecutor implements CommandExecutor {
+public class ShowExecutor extends AbstractBuildExecutor implements CommandExecutor {
 
     @Override
-    public void execute(CliCall cliCall) throws CommandExecutorException {
-
-        List<String> parameterList = cliCall.getParameterList();
-        if (parameterList.size() == 0) {
-            System.out.println("Show all programs ...");
-        } else {
-            System.out.println("Show ...");
-            for (String parameter : parameterList) {
-                System.out.println(parameter);
-            }
-
-        }
-
+    protected void callProgramMethod(Program program) throws ProgramManagerException {
+        org.mentalizr.serviceObjects.frontend.program.Program programSO = program.asProgram();
+        System.out.println(ProgramSOX.toJsonWithFormatting(programSO));
     }
 
 }

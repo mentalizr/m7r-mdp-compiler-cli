@@ -6,11 +6,13 @@ import org.mentalizr.contentManager.helper.PathAssertions;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.mentalizr.contentManagerCli.ContentManagerCli.OPTION_CONTENT_ROOT;
+import static org.mentalizr.contentManagerCli.ContentManagerCli.*;
 
 public class ExecutionContext {
 
     private final Path contentRootPath;
+    private final boolean verbose;
+    private final boolean stacktrace;
 
     public ExecutionContext(CliCall cliCall) throws ContentManagerCliException {
 
@@ -21,10 +23,22 @@ public class ExecutionContext {
         } else {
             this.contentRootPath = Path.of("").toAbsolutePath();
         }
+
+        this.verbose = cliCall.getOptionParserResultGlobal().hasOption(OPTION_VERBOSE);
+
+        this.stacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
     }
 
     public Path getContentRootPath() {
         return this.contentRootPath;
+    }
+
+    public boolean isVerbose() {
+        return this.verbose;
+    }
+
+    public boolean isStacktrace() {
+        return this.stacktrace;
     }
 
 }

@@ -14,6 +14,7 @@ dependencies {
 
     implementation 'org.mentalizr:m7r-content-manager:0.1-SNAPSHOT'
     implementation 'org.mentalizr:mdp-compiler:0.0.9-SNAPSHOT'
+    implementation 'org.mentalizr:m7r-service-objects:0.0.1-SNAPSHOT'
 
     implementation 'com.github.arthurpicht:cli:095ef699d1'
     implementation 'com.github.arthurpicht:utils-core:1.2.1'

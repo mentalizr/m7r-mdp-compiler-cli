@@ -11,13 +11,11 @@ import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 import de.arthurpicht.cli.parameter.ParametersOne;
-import org.mentalizr.contentManagerCli.executors.BuildExecutor;
-import org.mentalizr.contentManagerCli.executors.CleanBuildExecutor;
-import org.mentalizr.contentManagerCli.executors.CompileExecutor;
-import org.mentalizr.contentManagerCli.executors.ShowExecutor;
+import org.mentalizr.contentManagerCli.executors.*;
 
 public class ContentManagerCli {
 
+    public static final String OPTION_VERBOSE = "verbose";
     public static final String OPTION_STACKTRACE = "stacktrace";
     public static final String OPTION_CONTENT_ROOT = "content_root";
 
@@ -28,6 +26,7 @@ public class ContentManagerCli {
         Options globalOptions = new Options()
                 .add(new VersionOption())
                 .add(new ManOption())
+                .add(new OptionBuilder().withLongName("verbose").withDescription("verbose output").build(OPTION_VERBOSE))
                 .add(new OptionBuilder().withShortName('p').withLongName("content-root").withArgumentName("path").withDescription("Path to content root directory.").build(OPTION_CONTENT_ROOT))
                 .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE));
 
@@ -48,6 +47,14 @@ public class ContentManagerCli {
                 .withParameters(new ParametersMin(0, "program", "programs to be built"))
                 .withCommandExecutor(new CleanBuildExecutor())
                 .withDescription("Executes a clean build on specified programs or on all programs if none is specified.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("clean")
+                .withParameters(new ParametersMin(0, "program", "programs to be cleaned"))
+                .withCommandExecutor(new CleanExecutor())
+                .withDescription("Cleans specified programs or all programs if none is specified.")
                 .build()
         );
 
@@ -99,6 +106,10 @@ public class ContentManagerCli {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
             System.out.println(cliCall.getCliDefinition().getCliDescription().getExecutableName() + " command execution error. " + e.getMessage());
+            if (showStacktrace) e.printStackTrace();
+            System.exit(1);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
             if (showStacktrace) e.printStackTrace();
             System.exit(1);
         }
