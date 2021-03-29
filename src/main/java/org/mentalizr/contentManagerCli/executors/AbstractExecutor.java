@@ -8,7 +8,6 @@ import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.contentManagerCli.ContentManagerCliException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
-import org.mentalizr.contentManagerCli.MdpBuildHandler;
 import org.mentalizr.contentManagerCli.ProgramDirs;
 
 import java.nio.file.Path;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractBuildExecutor implements CommandExecutor {
+public abstract class AbstractExecutor implements CommandExecutor {
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
@@ -24,7 +23,7 @@ public abstract class AbstractBuildExecutor implements CommandExecutor {
 
         List<Path> programPaths = obtainProgramPaths(cliCall.getParameterList(), executionContext);
         List<Program> programs = parseProgramRepos(programPaths);
-        buildPrograms(programs);
+        processPrograms(programs);
     }
 
     private ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
@@ -56,14 +55,14 @@ public abstract class AbstractBuildExecutor implements CommandExecutor {
             try {
                 programs.add(new Program(programPath));
             } catch (ProgramManagerException e) {
-                throw new CommandExecutorException("Program repository [" + programPath.getFileName()
-                        + "] is inconsistent. " + e.getMessage(), e);
+                throw new CommandExecutorException("[" + programPath.getFileName() + "] "
+                        + "Program repository  is inconsistent. " + e.getMessage(), e);
             }
         }
         return programs;
     }
 
-    private void buildPrograms(List<Program> programs) throws CommandExecutorException {
+    private void processPrograms(List<Program> programs) throws CommandExecutorException {
         for (Program program : programs) {
             try {
                 callProgramMethod(program);

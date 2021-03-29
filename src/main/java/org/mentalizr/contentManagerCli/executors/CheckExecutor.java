@@ -6,7 +6,7 @@ import de.arthurpicht.cli.CommandExecutorException;
 
 import java.util.List;
 
-public class CompileExecutor implements CommandExecutor {
+public class CheckExecutor implements CommandExecutor {
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {

@@ -5,7 +5,7 @@ import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
 
-public class ShowExecutor extends AbstractBuildExecutor implements CommandExecutor {
+public class ShowExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
     protected void callProgramMethod(Program program) throws ProgramManagerException {

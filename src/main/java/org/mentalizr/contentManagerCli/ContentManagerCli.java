@@ -42,13 +42,13 @@ public class ContentManagerCli {
                 .build()
         );
 
-        commands.add(new CommandSequenceBuilder()
-                .addCommands("clean", "build")
-                .withParameters(new ParametersMin(0, "program", "programs to be built"))
-                .withCommandExecutor(new CleanBuildExecutor())
-                .withDescription("Executes a clean build on specified programs or on all programs if none is specified.")
-                .build()
-        );
+//        commands.add(new CommandSequenceBuilder()
+//                .addCommands("clean", "build")
+//                .withParameters(new ParametersMin(0, "program", "programs to be built"))
+//                .withCommandExecutor(new CleanBuildExecutor())
+//                .withDescription("Executes a clean build on specified programs or on all programs if none is specified.")
+//                .build()
+//        );
 
         commands.add(new CommandSequenceBuilder()
                 .addCommands("clean")
@@ -67,10 +67,10 @@ public class ContentManagerCli {
         );
 
         commands.add(new CommandSequenceBuilder()
-                .addCommands("compile")
-                .withParameters(new ParametersOne("content-id", "content id of mdp file to be compiled"))
-                .withCommandExecutor(new CompileExecutor())
-                .withDescription("Compiles a single mdp file with no impact for the repo state and for development purposes only.")
+                .addCommands("check")
+                .withParameters(new ParametersOne("content-id", "content id of mdp file to be checked"))
+                .withCommandExecutor(new CheckExecutor())
+                .withDescription("Checks a single mdp file for syntactically correctness. With no impact for the repo state. For development purposes.")
                 .build()
         );
 
@@ -109,7 +109,7 @@ public class ContentManagerCli {
             if (showStacktrace) e.printStackTrace();
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
-            System.out.println("[Internal error]" + e.getMessage());
+            System.out.println("[Internal error] " + e.getMessage());
             if (showStacktrace) e.printStackTrace();
             System.exit(1);
         }

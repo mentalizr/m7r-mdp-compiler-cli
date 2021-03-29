@@ -1,24 +1,15 @@
 package org.mentalizr.contentManagerCli.executors;
 
-import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
-import de.arthurpicht.cli.CommandExecutorException;
-import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ProgramManagerException;
-import org.mentalizr.contentManagerCli.ContentManagerCliException;
-import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.MdpBuildHandler;
-import org.mentalizr.contentManagerCli.ProgramDirs;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
-public class BuildExecutor extends AbstractBuildExecutor implements CommandExecutor {
+public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
     protected void callProgramMethod(Program program) throws ProgramManagerException {
+        program.clean();
         program.build(new MdpBuildHandler());
     }
 
