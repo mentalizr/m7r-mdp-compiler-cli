@@ -9,8 +9,12 @@ public class ShowExecutor extends AbstractBuildExecutor implements CommandExecut
 
     @Override
     protected void callProgramMethod(Program program) throws ProgramManagerException {
-        org.mentalizr.serviceObjects.frontend.program.Program programSO = program.asProgram();
-        System.out.println(ProgramSOX.toJsonWithFormatting(programSO));
+        if (program.isBuilt()) {
+            org.mentalizr.serviceObjects.frontend.program.Program programSO = program.asProgram();
+            System.out.println(ProgramSOX.toJsonWithFormatting(programSO));
+        } else {
+            throw new ProgramManagerException("Program not built yet.");
+        }
     }
 
 }

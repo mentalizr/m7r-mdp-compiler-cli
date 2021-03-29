@@ -105,11 +105,11 @@ public class ContentManagerCli {
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
-            System.out.println(cliCall.getCliDefinition().getCliDescription().getExecutableName() + " command execution error. " + e.getMessage());
+            System.out.println("[Error] " + e.getMessage());
             if (showStacktrace) e.printStackTrace();
             System.exit(1);
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+        } catch (RuntimeException | AssertionError e) {
+            System.out.println("[Internal error]" + e.getMessage());
             if (showStacktrace) e.printStackTrace();
             System.exit(1);
         }

@@ -68,7 +68,7 @@ public abstract class AbstractBuildExecutor implements CommandExecutor {
             try {
                 callProgramMethod(program);
             } catch (ProgramManagerException e) {
-                throw new CommandExecutorException("Error on building program [" + program.getName() + "]. " +
+                throw new CommandExecutorException("[" + program.getName() + "] " +
                         e.getMessage(), e);
             }
         }
