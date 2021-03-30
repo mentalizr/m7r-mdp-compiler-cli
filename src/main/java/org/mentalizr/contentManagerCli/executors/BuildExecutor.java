@@ -8,7 +8,7 @@ import org.mentalizr.contentManagerCli.MdpBuildHandler;
 public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
-    protected void callProgramMethod(Program program) throws ProgramManagerException {
+    protected void processProgram(Program program) throws ProgramManagerException {
         program.clean();
         program.build(new MdpBuildHandler());
     }

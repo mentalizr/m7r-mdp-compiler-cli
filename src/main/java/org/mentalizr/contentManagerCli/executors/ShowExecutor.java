@@ -8,7 +8,7 @@ import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
 public class ShowExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
-    protected void callProgramMethod(Program program) throws ProgramManagerException {
+    protected void processProgram(Program program) throws ProgramManagerException {
         if (program.isBuilt()) {
             org.mentalizr.serviceObjects.frontend.program.Program programSO = program.asProgram();
             System.out.println(ProgramSOX.toJsonWithFormatting(programSO));

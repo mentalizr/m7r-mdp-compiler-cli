@@ -11,6 +11,9 @@ import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 import de.arthurpicht.cli.parameter.ParametersOne;
+import org.mentalizr.contentManagerCli.console.Output;
+import org.mentalizr.contentManagerCli.console.OutputConfig;
+import org.mentalizr.contentManagerCli.console.OutputConfigCreator;
 import org.mentalizr.contentManagerCli.executors.*;
 
 public class ContentManagerCli {
@@ -18,17 +21,25 @@ public class ContentManagerCli {
     public static final String OPTION_VERBOSE = "verbose";
     public static final String OPTION_STACKTRACE = "stacktrace";
     public static final String OPTION_CONTENT_ROOT = "content_root";
+    public static final String OPTION_SILENT = "silent";
+    public static final String OPTION_LOGGER = "logger";
+    public static final String OPTION_LOGGER_NAME = "logger_name";
+    public static final String OPTION_NO_COLOR = "no_color";
+
+    public static final String OPTION__CLEAN__FORCE = "clean__force";
 
     private static Cli createCli() {
-
-        // # mdpc clean build
 
         Options globalOptions = new Options()
                 .add(new VersionOption())
                 .add(new ManOption())
                 .add(new OptionBuilder().withLongName("verbose").withDescription("verbose output").build(OPTION_VERBOSE))
                 .add(new OptionBuilder().withShortName('p').withLongName("content-root").withArgumentName("path").withDescription("Path to content root directory.").build(OPTION_CONTENT_ROOT))
-                .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE));
+                .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE))
+                .add(new OptionBuilder().withLongName("silent").withDescription("Make no output to console.").build(OPTION_SILENT))
+                .add(new OptionBuilder().withLongName("no-color").withDescription("Ommit colorization on console output.").build(OPTION_NO_COLOR))
+                .add(new OptionBuilder().withShortName('l').withLongName("logger").withDescription("Print output to logger.").build(OPTION_LOGGER))
+                .add(new OptionBuilder().withLongName("logger-name").withDescription("Name of logger. Default is 'org.mentalizr.contentManagerCli'.").build(OPTION_LOGGER_NAME));
 
         Commands commands = new Commands();
 
@@ -52,6 +63,8 @@ public class ContentManagerCli {
 
         commands.add(new CommandSequenceBuilder()
                 .addCommands("clean")
+                .withSpecificOptions(new Options()
+                        .add(new OptionBuilder().withShortName('f').withLongName("force").withDescription("force cleaning program directory").build(OPTION__CLEAN__FORCE)))
                 .withParameters(new ParametersMin(0, "program", "programs to be cleaned"))
                 .withCommandExecutor(new CleanExecutor())
                 .withDescription("Cleans specified programs or all programs if none is specified.")
@@ -102,15 +115,20 @@ public class ContentManagerCli {
 
         boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
 
+        OutputConfig outputConfig = OutputConfigCreator.create(cliCall);
+        Output.initialize(outputConfig);
+
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
-            System.out.println("[Error] " + e.getMessage());
-            if (showStacktrace) e.printStackTrace();
+            Output.error(e.getMessage());
+//            System.out.println("[Error] " + e.getMessage());
+            if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
-            System.out.println("[Internal error] " + e.getMessage());
-            if (showStacktrace) e.printStackTrace();
+//            System.out.println("[Internal error] " + e.getMessage());
+            Output.internalError(e.getMessage());
+            if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
             System.exit(1);
         }
 

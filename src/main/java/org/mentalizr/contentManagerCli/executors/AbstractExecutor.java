@@ -9,6 +9,7 @@ import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.contentManagerCli.ContentManagerCliException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramDirs;
+import org.mentalizr.contentManagerCli.console.Output;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public abstract class AbstractExecutor implements CommandExecutor {
         processPrograms(programs);
     }
 
-    private ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
+    protected ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
         try {
             return new ExecutionContext(cliCall);
         } catch (ContentManagerCliException e) {
@@ -34,7 +35,7 @@ public abstract class AbstractExecutor implements CommandExecutor {
         }
     }
 
-    private List<Path> obtainProgramPaths(List<String> programs, ExecutionContext executionContext) throws CommandExecutorException {
+    protected List<Path> obtainProgramPaths(List<String> programs, ExecutionContext executionContext) throws CommandExecutorException {
         if (programs.size() == 0) {
             if (executionContext.isVerbose())
                 System.out.println("Target programs: all");
@@ -65,14 +66,15 @@ public abstract class AbstractExecutor implements CommandExecutor {
     private void processPrograms(List<Program> programs) throws CommandExecutorException {
         for (Program program : programs) {
             try {
-                callProgramMethod(program);
+                processProgram(program);
             } catch (ProgramManagerException e) {
+//                Output.
                 throw new CommandExecutorException("[" + program.getName() + "] " +
                         e.getMessage(), e);
             }
         }
     }
 
-    protected abstract void callProgramMethod(Program program) throws ProgramManagerException;
+    protected abstract void processProgram(Program program) throws ProgramManagerException;
 
 }
