@@ -10,6 +10,8 @@ import org.mentalizr.contentManagerCli.ContentManagerCliException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramDirs;
 import org.mentalizr.contentManagerCli.console.Output;
+import org.mentalizr.contentManagerCli.console.OutputFormatter;
+import org.mentalizr.contentManagerCli.console.OutputFormatterBuilder;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -17,6 +19,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AbstractExecutor implements CommandExecutor {
+
+    private static final OutputFormatter outputFormatterNormal
+            = new OutputFormatterBuilder().withTypeNormal().build();
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
@@ -38,14 +43,14 @@ public abstract class AbstractExecutor implements CommandExecutor {
     protected List<Path> obtainProgramPaths(List<String> programs, ExecutionContext executionContext) throws CommandExecutorException {
         if (programs.size() == 0) {
             if (executionContext.isVerbose())
-                System.out.println("Target programs: all");
+                Output.out(outputFormatterNormal, "Target programs: all");
             return ProgramDirs.getAllProgramDirs(executionContext.getContentRootPath());
         } else {
             if (executionContext.isVerbose())
-                System.out.println("Target programs: " + Strings.listing(programs, ", "));
+                Output.out(outputFormatterNormal, "Target programs: " + Strings.listing(programs, ", "));
             List<Path> paths = ProgramDirs.getProgramDirs(executionContext.getContentRootPath(), programs);
             if (executionContext.isVerbose())
-                System.out.println("Found programs: " + Strings.listing(paths.stream().map(Path::toString).collect(Collectors.toList()), ", "));
+                Output.out(outputFormatterNormal, "Found programs: " + Strings.listing(paths.stream().map(Path::toString).collect(Collectors.toList()), ", "));
             return paths;
         }
     }
@@ -68,7 +73,6 @@ public abstract class AbstractExecutor implements CommandExecutor {
             try {
                 processProgram(program);
             } catch (ProgramManagerException e) {
-//                Output.
                 throw new CommandExecutorException("[" + program.getName() + "] " +
                         e.getMessage(), e);
             }
