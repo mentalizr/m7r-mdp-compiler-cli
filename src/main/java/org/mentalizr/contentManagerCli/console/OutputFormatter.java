@@ -67,7 +67,8 @@ public class OutputFormatter {
                 outputConfig.getErrorOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED");
             }
         }
-        String summary = executionSummary.getTotalExecutions() + " programs processed. "
+        String summary = executionSummary.getTotalExecutions()
+                + " program" + (executionSummary.getTotalExecutions() > 1 ? "s" : "") + " processed. "
                 + executionSummary.getSuccessfulExecutions() + " ok, "
                 + executionSummary.getFailedExecutions() + " failed.";
         if (executionSummary.isSuccessful()) {

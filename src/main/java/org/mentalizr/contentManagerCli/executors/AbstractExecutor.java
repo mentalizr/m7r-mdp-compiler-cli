@@ -20,16 +20,25 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractExecutor implements CommandExecutor {
 
-    private static final OutputFormatter outputFormatterNormal
+    protected static final OutputFormatter outputFormatterOk
+            = new OutputFormatterBuilder().withTypeOK().withProgramTag().build();
+    protected static final OutputFormatter outputFormatterError
+            = new OutputFormatterBuilder().withTypeError().withProgramTag().build();
+    protected static final OutputFormatter outputFormatterNormal
             = new OutputFormatterBuilder().withTypeNormal().build();
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
         ExecutionContext executionContext = initExecutionContext(cliCall);
+        ExecutionSummary executionSummary = new ExecutionSummary(getOperationName());
 
         List<Path> programPaths = obtainProgramPaths(cliCall.getParameterList(), executionContext);
-        List<Program> programs = parseProgramRepos(programPaths);
-        processPrograms(programs);
+        List<Program> programs = parseProgramRepos(executionSummary, programPaths);
+        processPrograms(executionContext, executionSummary, programs);
+
+        Output.summaryOut(executionSummary);
+        if (executionSummary.isFailed())
+            throw new CommandExecutorException();
     }
 
     protected ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
@@ -55,29 +64,50 @@ public abstract class AbstractExecutor implements CommandExecutor {
         }
     }
 
-    private List<Program> parseProgramRepos(List<Path> programPaths) throws CommandExecutorException {
+    private List<Program> parseProgramRepos(ExecutionSummary executionSummary, List<Path> programPaths) throws CommandExecutorException {
         List<Program> programs = new ArrayList<>();
         for (Path programPath : programPaths) {
             try {
                 programs.add(new Program(programPath));
             } catch (ProgramManagerException e) {
-                throw new CommandExecutorException("[" + programPath.getFileName() + "] "
-                        + "Program repository  is inconsistent. " + e.getMessage(), e);
+                outErrorInconsistentProgram(programPath, e);
+                executionSummary.incFailed();
             }
         }
         return programs;
     }
 
-    private void processPrograms(List<Program> programs) throws CommandExecutorException {
+    private void processPrograms(ExecutionContext executionContext, ExecutionSummary executionSummary, List<Program> programs) throws CommandExecutorException {
         for (Program program : programs) {
             try {
                 processProgram(program);
+                outOk(program);
+                executionSummary.incSuccess();
             } catch (ProgramManagerException e) {
-                throw new CommandExecutorException("[" + program.getName() + "] " +
-                        e.getMessage(), e);
+                outError(program, e);
+                if (executionContext.isStacktrace()) Output.stacktrace(e);
+                executionSummary.incFailed();
             }
         }
     }
+
+    protected void outOk(Program program) {
+        Output.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
+    }
+
+    protected void outError(Program program, Exception e) {
+        Output.out(outputFormatterError, program.getName(), getMessageTextFailed() + " Cause: " + e.getMessage());
+    }
+
+    protected void outErrorInconsistentProgram(Path programPath, Exception cause) {
+        Output.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " No valid program. Cause: " + cause.getMessage());
+    }
+
+    protected abstract String getOperationName();
+
+    protected abstract String getMessageTextSuccess();
+
+    protected abstract String getMessageTextFailed();
 
     protected abstract void processProgram(Program program) throws ProgramManagerException;
 
