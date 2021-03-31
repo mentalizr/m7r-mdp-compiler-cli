@@ -2,6 +2,7 @@ package org.mentalizr.contentManagerCli;
 
 import de.arthurpicht.cli.CliCall;
 import org.mentalizr.contentManager.helper.PathAssertions;
+import org.mentalizr.contentManagerCli.executors.ExecutionSummary;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +26,6 @@ public class ExecutionContext {
         }
 
         this.verbose = cliCall.getOptionParserResultGlobal().hasOption(OPTION_VERBOSE);
-
         this.stacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
     }
 

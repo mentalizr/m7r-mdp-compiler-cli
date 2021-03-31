@@ -30,6 +30,9 @@ public class ContentManagerCli {
             = new OutputFormatterBuilder().withTypeError().build();
     private static final OutputFormatter outputFormatterInternalError
             = new OutputFormatterBuilder().withTypeInternalError().build();
+    private static final OutputFormatter outputFormatterNormal
+            = new OutputFormatterBuilder().withTypeNormal().build();
+
 
     private static Cli createCli() {
 
@@ -91,7 +94,7 @@ public class ContentManagerCli {
         );
 
         CliDescription cliDescription = new CliDescriptionBuilder()
-                .withDescription("The mentalizr content manager CLI.\nhttps://github.com/mentalizr/m7r-content-manager-cli")
+                .withDescription("mentalizr content manager CLI\nhttps://github.com/mentalizr/m7r-content-manager-cli")
                 .withVersion("0.1-SNAPSHOT")
                 .withDate("2021-03-21")
                 .build("m7r-cm");
@@ -120,19 +123,16 @@ public class ContentManagerCli {
 
         OutputConfig outputConfig = OutputConfigCreator.create(cliCall);
         Output.initialize(outputConfig);
+        String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
+                + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
+        Output.out(outputFormatterNormal, welcomeString);
 
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
-            Output.out(outputFormatterError, e.getMessage());
-//            Output.error(e.getMessage());
-//            System.out.println("[Error] " + e.getMessage());
-            if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
             Output.out(outputFormatterInternalError, e.getMessage());
-//            System.out.println("[Internal error] " + e.getMessage());
-//            Output.internalError(e.getMessage());
             if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
             System.exit(1);
         }
