@@ -10,6 +10,8 @@ import org.mentalizr.contentManager.fileHierarchy.levels.contentRoot.HtmlDir;
 import org.mentalizr.contentManagerCli.ContentManagerCli;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.console.Output;
+import org.mentalizr.contentManagerCli.console.OutputFormatter;
+import org.mentalizr.contentManagerCli.console.OutputFormatterBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +19,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
+
+    private static final OutputFormatter outputFormatterOk
+            = new OutputFormatterBuilder().withTypeOK().withProgramTag().build();
 
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
@@ -55,8 +60,7 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
         } catch (IOException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
-        Output.ok("Program repo cleaned successfully.", programPath.getFileName().toString());
-//        System.out.println("[OK] [" + programPath.getFileName() + "] cleaned.");
+        Output.out(outputFormatterOk, programPath.getFileName().toString(), "Program repo cleaned successfully.");
     }
 
 }

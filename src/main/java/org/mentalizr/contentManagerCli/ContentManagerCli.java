@@ -11,9 +11,7 @@ import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 import de.arthurpicht.cli.parameter.ParametersOne;
-import org.mentalizr.contentManagerCli.console.Output;
-import org.mentalizr.contentManagerCli.console.OutputConfig;
-import org.mentalizr.contentManagerCli.console.OutputConfigCreator;
+import org.mentalizr.contentManagerCli.console.*;
 import org.mentalizr.contentManagerCli.executors.*;
 
 public class ContentManagerCli {
@@ -27,6 +25,11 @@ public class ContentManagerCli {
     public static final String OPTION_NO_COLOR = "no_color";
 
     public static final String OPTION__CLEAN__FORCE = "clean__force";
+
+    private static final OutputFormatter outputFormatterError
+            = new OutputFormatterBuilder().withTypeError().build();
+    private static final OutputFormatter outputFormatterInternalError
+            = new OutputFormatterBuilder().withTypeInternalError().build();
 
     private static Cli createCli() {
 
@@ -121,13 +124,15 @@ public class ContentManagerCli {
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
-            Output.error(e.getMessage());
+            Output.out(outputFormatterError, e.getMessage());
+//            Output.error(e.getMessage());
 //            System.out.println("[Error] " + e.getMessage());
             if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
+            Output.out(outputFormatterInternalError, e.getMessage());
 //            System.out.println("[Internal error] " + e.getMessage());
-            Output.internalError(e.getMessage());
+//            Output.internalError(e.getMessage());
             if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
             System.exit(1);
         }
