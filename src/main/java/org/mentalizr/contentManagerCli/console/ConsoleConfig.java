@@ -2,7 +2,7 @@ package org.mentalizr.contentManagerCli.console;
 
 import java.io.PrintStream;
 
-public class OutputConfig {
+public class ConsoleConfig {
 
     private final boolean toConsole;
     private final boolean colorizedConsole;
@@ -11,7 +11,7 @@ public class OutputConfig {
     private final PrintStream out;
     private final PrintStream errorOut;
 
-    public OutputConfig(boolean toConsole, boolean colorizedConsole, boolean toLogger, String loggerName, PrintStream out, PrintStream errorOut) {
+    public ConsoleConfig(boolean toConsole, boolean colorizedConsole, boolean toLogger, String loggerName, PrintStream out, PrintStream errorOut) {
         this.toConsole = toConsole;
         this.colorizedConsole = colorizedConsole;
         this.toLogger = toLogger;

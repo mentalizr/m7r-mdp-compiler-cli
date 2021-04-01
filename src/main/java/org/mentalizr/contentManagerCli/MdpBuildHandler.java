@@ -16,7 +16,8 @@ public class MdpBuildHandler implements BuildHandler {
     public List<String> compile(MdpFile mdpFile) throws BuildException {
 
         try {
-            System.out.println("Processing: " + mdpFile.asPath().toAbsolutePath());
+//            System.out.println("Processing: " + mdpFile.asPath().toAbsolutePath());
+
 //            List<String> contentStrings = new ArrayList<>();
 //            contentStrings.add("<--");
 //            contentStrings.add(mdpFile.asPath().toAbsolutePath().toString());

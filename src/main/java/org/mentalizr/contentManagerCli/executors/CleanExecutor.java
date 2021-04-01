@@ -6,7 +6,7 @@ import de.arthurpicht.cli.CommandExecutorException;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
-import org.mentalizr.contentManagerCli.console.Output;
+import org.mentalizr.contentManagerCli.console.Console;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -21,7 +21,7 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
         List<Path> programPaths = obtainProgramPaths(cliCall.getParameterList(), executionContext);
         cleanPrograms(executionContext, executionSummary, programPaths);
 
-        Output.summaryOut(executionSummary);
+        Console.summaryOut(executionSummary);
         if (executionSummary.isFailed())
             throw new CommandExecutorException();
     }
@@ -42,7 +42,7 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
     }
 
     @Override
-    protected void processProgram(Program program) {
+    protected void processProgram(ExecutionContext executionContext, Program program) {
         throw new RuntimeException("Intentionally not implemented.");
     }
 
@@ -56,11 +56,11 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
         try {
             Program program = new Program(programPath);
             program.clean();
-            Output.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
+            Console.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
             executionSummary.incSuccess();
         } catch (ProgramManagerException e) {
-            Output.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " Cause: " + e.getMessage());
-            if (executionContext.isStacktrace()) Output.stacktrace(e);
+            Console.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " Cause: " + e.getMessage());
+            if (executionContext.isStacktrace()) Console.stacktrace(e);
             executionSummary.incFailed();
         }
     }

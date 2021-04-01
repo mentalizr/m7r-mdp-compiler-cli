@@ -9,7 +9,7 @@ import java.util.Locale;
 
 public class OutputFormatter {
 
-    public enum OutputType { NORMAL, ERROR, OK}
+    public enum OutputType { NORMAL, ERROR, OK, PROGRAM}
 
     private static final AnsiFormat okFormat = new AnsiFormat(Attribute.GREEN_TEXT(), Attribute.BOLD());
     private static final AnsiFormat errorFormat = new AnsiFormat(Attribute.RED_TEXT(), Attribute.BOLD());
@@ -25,73 +25,73 @@ public class OutputFormatter {
         this.hasProgramTag = hasProgramTag;
     }
 
-    public void write(OutputConfig outputConfig, String program, String message) {
-        if (outputConfig.isCompletelySilent()) return;
+    public void write(ConsoleConfig consoleConfig, String program, String message) {
+        if (consoleConfig.isCompletelySilent()) return;
 
-        writeToConsole(outputConfig, program, message);
-        writeToLogger(outputConfig, program, message);
+        writeToConsole(consoleConfig, program, message);
+        writeToLogger(consoleConfig, program, message);
     }
 
-    public void write(OutputConfig outputConfig, String message) {
+    public void write(ConsoleConfig consoleConfig, String message) {
         if (this.hasProgramTag)
             throw new IllegalStateException("Wrong write method called. " + OutputFormatter.class.getSimpleName()
                     + " initialized for rendering program name.");
-        if (outputConfig.isCompletelySilent()) return;
+        if (consoleConfig.isCompletelySilent()) return;
 
         String program = "";
-        writeToConsole(outputConfig, program, message);
-        writeToLogger(outputConfig, program, message);
+        writeToConsole(consoleConfig, program, message);
+        writeToLogger(consoleConfig, program, message);
     }
 
-    public static void writeSummary(OutputConfig outputConfig, ExecutionSummary executionSummary) {
-        if (outputConfig.isCompletelySilent()) return;
-        writeSummaryToConsole(outputConfig, executionSummary);
+    public static void writeSummary(ConsoleConfig consoleConfig, ExecutionSummary executionSummary) {
+        if (consoleConfig.isCompletelySilent()) return;
+        writeSummaryToConsole(consoleConfig, executionSummary);
         // TODO writeSummaryToLog
     }
 
-    private static void writeSummaryToConsole(OutputConfig outputConfig, ExecutionSummary executionSummary) {
-        if (!outputConfig.isToConsole()) return;
+    private static void writeSummaryToConsole(ConsoleConfig consoleConfig, ExecutionSummary executionSummary) {
+        if (!consoleConfig.isToConsole()) return;
 
-        if (outputConfig.isColorizedConsole()) {
+        if (consoleConfig.isColorizedConsole()) {
             if (executionSummary.isSuccessful()) {
-                outputConfig.getOut().println();
-                outputConfig.getOut().println(Ansi.colorize(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " SUCCESSFUL", okFormat));
+                consoleConfig.getOut().println();
+                consoleConfig.getOut().println(Ansi.colorize(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " SUCCESSFUL", okFormat));
             } else {
-                outputConfig.getErrorOut().println();
-                outputConfig.getErrorOut().println(Ansi.colorize(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED", errorFormat));
+                consoleConfig.getErrorOut().println();
+                consoleConfig.getErrorOut().println(Ansi.colorize(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED", errorFormat));
             }
         } else {
             if (executionSummary.isSuccessful()) {
-                outputConfig.getOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " SUCCESSFUL");
+                consoleConfig.getOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " SUCCESSFUL");
             } else {
-                outputConfig.getErrorOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED");
+                consoleConfig.getErrorOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED");
             }
         }
         String summary = executionSummary.getTotalExecutions()
-                + " program" + (executionSummary.getTotalExecutions() > 1 ? "s" : "") + " processed. "
+                + " program" + (executionSummary.getTotalExecutions() > 1 ? "s" : "") + " processed: "
                 + executionSummary.getSuccessfulExecutions() + " ok, "
                 + executionSummary.getFailedExecutions() + " failed.";
         if (executionSummary.isSuccessful()) {
-            outputConfig.getOut().println(summary);
+            consoleConfig.getOut().println(summary);
         } else {
-            outputConfig.getErrorOut().println(summary);
+            consoleConfig.getErrorOut().println(summary);
         }
     }
 
-    private void writeToConsole(OutputConfig outputConfig, String program, String message) {
-        if (!outputConfig.isToConsole()) return;
+    private void writeToConsole(ConsoleConfig consoleConfig, String program, String message) {
+        if (!consoleConfig.isToConsole()) return;
 
-        if (outputConfig.isColorizedConsole()) {
-            writeColorizedTypeTag(outputConfig);
-            writeColorizedProgramTag(outputConfig, program);
+        if (consoleConfig.isColorizedConsole()) {
+            if (this.outputType != OutputType.PROGRAM) writeColorizedTypeTag(consoleConfig);
+            writeColorizedProgramTag(consoleConfig, program);
         } else {
-            writePlainTypeTag(outputConfig);
-            writePlainProgramTag(outputConfig, program);
+            if (this.outputType != OutputType.PROGRAM) writePlainTypeTag(consoleConfig);
+            writePlainProgramTag(consoleConfig, program);
         }
-        writeMessage(outputConfig, message);
+        writeMessage(consoleConfig, message);
     }
 
-    private void writeColorizedTypeTag(OutputConfig outputConfig) {
+    private void writeColorizedTypeTag(ConsoleConfig consoleConfig) {
         if (this.outputType == OutputType.NORMAL) return;
 
         String tag = "[" + this.tag + "] ";
@@ -101,36 +101,36 @@ public class OutputFormatter {
         } else {
             ansiFormat = errorFormat;
         }
-        outputConfig.getOut().print(Ansi.colorize(tag, ansiFormat));
+        consoleConfig.getOut().print(Ansi.colorize(tag, ansiFormat));
     }
 
-    private void writeColorizedProgramTag(OutputConfig outputConfig, String program) {
+    private void writeColorizedProgramTag(ConsoleConfig consoleConfig, String program) {
         if (!this.hasProgramTag) return;
 
         String tag = "[" + program + "] ";
-        outputConfig.getOut().print(Ansi.colorize(tag, programFormat));
+        consoleConfig.getOut().print(Ansi.colorize(tag, programFormat));
     }
 
-    private void writeMessage(OutputConfig outputConfig, String message) {
-        outputConfig.getOut().println(message);
+    private void writeMessage(ConsoleConfig consoleConfig, String message) {
+        consoleConfig.getOut().println(message);
     }
 
-    private void writePlainTypeTag(OutputConfig outputConfig) {
+    private void writePlainTypeTag(ConsoleConfig consoleConfig) {
         if (this.outputType == OutputType.NORMAL) return;
 
         String tag = "[" + this.tag + "] ";
-        outputConfig.getOut().print(tag);
+        consoleConfig.getOut().print(tag);
     }
 
-    private void writePlainProgramTag(OutputConfig outputConfig, String program) {
+    private void writePlainProgramTag(ConsoleConfig consoleConfig, String program) {
         if (!this.hasProgramTag) return;
 
         String tag = "[" + program + "] ";
-        outputConfig.getOut().print(tag);
+        consoleConfig.getOut().print(tag);
     }
 
-    private void writeToLogger(OutputConfig outputConfig, String program, String message) {
-        if (!outputConfig.isToLogger()) return;
+    private void writeToLogger(ConsoleConfig consoleConfig, String program, String message) {
+        if (!consoleConfig.isToLogger()) return;
 
         String output = "";
         if (this.outputType != OutputType.NORMAL) {
@@ -143,7 +143,7 @@ public class OutputFormatter {
         output += message;
 
         // TODO write output
-        if (outputConfig.isToLogger()) {
+        if (consoleConfig.isToLogger()) {
             System.out.println("TO LOGGER: " + output);
         }
     }

@@ -29,6 +29,14 @@ public class OutputFormatterBuilder {
         this.tag = "Internal error";
         return this;
     }
+
+    public OutputFormatterBuilder withTypeProgram() {
+        this.outputType = OutputFormatter.OutputType.PROGRAM;
+        this.tag = "";
+        this.hasProgramTag = true;
+        return this;
+    }
+
     public OutputFormatterBuilder withTypeNormal() {
         this.outputType = OutputFormatter.OutputType.NORMAL;
         this.tag = "";

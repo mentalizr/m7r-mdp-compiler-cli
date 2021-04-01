@@ -2,7 +2,7 @@ package org.mentalizr.contentManagerCli.console;
 
 import java.io.PrintStream;
 
-public class OutputConfigBuilder {
+public class ConsoleConfigBuilder {
 
     private boolean toConsole = true;
     private boolean colorizedConsole = true;
@@ -11,38 +11,38 @@ public class OutputConfigBuilder {
     private PrintStream out = System.out;
     private PrintStream errorOut = System.err;
 
-    public OutputConfigBuilder withOutputToConsole(boolean toConsole) {
+    public ConsoleConfigBuilder withOutputToConsole(boolean toConsole) {
         this.toConsole = toConsole;
         return this;
     }
 
-    public OutputConfigBuilder withColorizedConsole(boolean colorizedConsole) {
+    public ConsoleConfigBuilder withColorizedConsole(boolean colorizedConsole) {
         this.colorizedConsole = colorizedConsole;
         return this;
     }
 
-    public OutputConfigBuilder withOutputToLogger(boolean toLogger) {
+    public ConsoleConfigBuilder withOutputToLogger(boolean toLogger) {
         this.toLogger = toLogger;
         return this;
     }
 
-    public OutputConfigBuilder withLoggerName(String loggerName) {
+    public ConsoleConfigBuilder withLoggerName(String loggerName) {
         this.loggerName = loggerName;
         return this;
     }
 
-    public OutputConfigBuilder withOutputToPrintStream(PrintStream out) {
+    public ConsoleConfigBuilder withOutputToPrintStream(PrintStream out) {
         this.out = out;
         return this;
     }
 
-    public OutputConfigBuilder withErrorOutputToPrintStream(PrintStream errorOut) {
+    public ConsoleConfigBuilder withErrorOutputToPrintStream(PrintStream errorOut) {
         this.errorOut = errorOut;
         return this;
     }
 
-    public OutputConfig build() {
-        return new OutputConfig(
+    public ConsoleConfig build() {
+        return new ConsoleConfig(
                 this.toConsole,
                 this.colorizedConsole,
                 this.toLogger,

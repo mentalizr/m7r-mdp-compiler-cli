@@ -59,18 +59,10 @@ public class ContentManagerCli {
                 .build()
         );
 
-//        commands.add(new CommandSequenceBuilder()
-//                .addCommands("clean", "build")
-//                .withParameters(new ParametersMin(0, "program", "programs to be built"))
-//                .withCommandExecutor(new CleanBuildExecutor())
-//                .withDescription("Executes a clean build on specified programs or on all programs if none is specified.")
-//                .build()
-//        );
-
         commands.add(new CommandSequenceBuilder()
                 .addCommands("clean")
-                .withSpecificOptions(new Options()
-                        .add(new OptionBuilder().withShortName('f').withLongName("force").withDescription("force cleaning program directory").build(OPTION__CLEAN__FORCE)))
+//                .withSpecificOptions(new Options()
+//                        .add(new OptionBuilder().withShortName('f').withLongName("force").withDescription("force cleaning program directory").build(OPTION__CLEAN__FORCE)))
                 .withParameters(new ParametersMin(0, "program", "programs to be cleaned"))
                 .withCommandExecutor(new CleanExecutor())
                 .withDescription("Cleans specified programs or all programs if none is specified.")
@@ -121,24 +113,21 @@ public class ContentManagerCli {
 
         boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
 
-        OutputConfig outputConfig = OutputConfigCreator.create(cliCall);
-        Output.initialize(outputConfig);
+        ConsoleConfig consoleConfig = ConsoleConfigCreator.create(cliCall);
+        Console.initialize(consoleConfig);
         String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
                 + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
-        Output.out(outputFormatterNormal, welcomeString);
+        Console.out(outputFormatterNormal, welcomeString);
 
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
-            Output.out(outputFormatterInternalError, e.getMessage());
-            if (showStacktrace) e.printStackTrace(outputConfig.getErrorOut());
+            Console.out(outputFormatterInternalError, e.getMessage());
+            if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());
             System.exit(1);
         }
-
-
-
     }
 
 }

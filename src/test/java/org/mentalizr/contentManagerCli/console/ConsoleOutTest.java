@@ -10,15 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConsoleOutTest {
 
     @Test
-    void plausibilityTest() {
-
-        ConsoleOut consoleOut = new ConsoleOut();
-
-        String output = "Hallo " + consoleOut.red() + " world!";
-
-    }
-
-    @Test
     void jColorTest() {
 
         AnsiFormat greenFormat = new AnsiFormat(Attribute.GREEN_TEXT(), Attribute.BOLD());

@@ -9,7 +9,8 @@ import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.contentManagerCli.ContentManagerCliException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramDirs;
-import org.mentalizr.contentManagerCli.console.Output;
+import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.contentManagerCli.console.ConsoleOutput;
 import org.mentalizr.contentManagerCli.console.OutputFormatter;
 import org.mentalizr.contentManagerCli.console.OutputFormatterBuilder;
 
@@ -22,6 +23,8 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
     protected static final OutputFormatter outputFormatterOk
             = new OutputFormatterBuilder().withTypeOK().withProgramTag().build();
+    protected static final OutputFormatter outputFormatterOkSimple
+            = new OutputFormatterBuilder().withTypeOK().build();
     protected static final OutputFormatter outputFormatterError
             = new OutputFormatterBuilder().withTypeError().withProgramTag().build();
     protected static final OutputFormatter outputFormatterNormal
@@ -36,7 +39,7 @@ public abstract class AbstractExecutor implements CommandExecutor {
         List<Program> programs = parseProgramRepos(executionSummary, programPaths);
         processPrograms(executionContext, executionSummary, programs);
 
-        Output.summaryOut(executionSummary);
+        Console.summaryOut(executionSummary);
         if (executionSummary.isFailed())
             throw new CommandExecutorException();
     }
@@ -52,14 +55,14 @@ public abstract class AbstractExecutor implements CommandExecutor {
     protected List<Path> obtainProgramPaths(List<String> programs, ExecutionContext executionContext) throws CommandExecutorException {
         if (programs.size() == 0) {
             if (executionContext.isVerbose())
-                Output.out(outputFormatterNormal, "Target programs: all");
+                Console.out(outputFormatterNormal, "Target programs: all");
             return ProgramDirs.getAllProgramDirs(executionContext.getContentRootPath());
         } else {
             if (executionContext.isVerbose())
-                Output.out(outputFormatterNormal, "Target programs: " + Strings.listing(programs, ", "));
+                Console.out(outputFormatterNormal, "Target programs: " + Strings.listing(programs, ", "));
             List<Path> paths = ProgramDirs.getProgramDirs(executionContext.getContentRootPath(), programs);
             if (executionContext.isVerbose())
-                Output.out(outputFormatterNormal, "Found programs: " + Strings.listing(paths.stream().map(Path::toString).collect(Collectors.toList()), ", "));
+                Console.out(outputFormatterNormal, "Found programs: " + Strings.listing(paths.stream().map(Path::toString).collect(Collectors.toList()), ", "));
             return paths;
         }
     }
@@ -70,7 +73,8 @@ public abstract class AbstractExecutor implements CommandExecutor {
             try {
                 programs.add(new Program(programPath));
             } catch (ProgramManagerException e) {
-                outErrorInconsistentProgram(programPath, e);
+                ConsoleOutput.printErrorNoValidProgram(programPath, getMessageTextFailed(), e);
+//                outErrorInconsistentProgram(programPath, e);
                 executionSummary.incFailed();
             }
         }
@@ -80,28 +84,40 @@ public abstract class AbstractExecutor implements CommandExecutor {
     private void processPrograms(ExecutionContext executionContext, ExecutionSummary executionSummary, List<Program> programs) throws CommandExecutorException {
         for (Program program : programs) {
             try {
-                processProgram(program);
-                outOk(program);
+                processProgram(executionContext, program);
+                ConsoleOutput.printOk(program, getMessageTextSuccess());
                 executionSummary.incSuccess();
             } catch (ProgramManagerException e) {
-                outError(program, e);
-                if (executionContext.isStacktrace()) Output.stacktrace(e);
+                ConsoleOutput.printError(program, getMessageTextFailed(), e);
+                if (executionContext.isStacktrace()) Console.stacktrace(e);
                 executionSummary.incFailed();
             }
         }
     }
 
-    protected void outOk(Program program) {
-        Output.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
-    }
-
-    protected void outError(Program program, Exception e) {
-        Output.out(outputFormatterError, program.getName(), getMessageTextFailed() + " Cause: " + e.getMessage());
-    }
-
-    protected void outErrorInconsistentProgram(Path programPath, Exception cause) {
-        Output.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " No valid program. Cause: " + cause.getMessage());
-    }
+//    protected void outOk(Program program) {
+//        Console.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
+//    }
+//
+//    protected void outOk(String message) {
+//        Console.out(outputFormatterOkSimple, message);
+//    }
+//
+//    protected void outError(Program program, Exception e) {
+//        Console.out(outputFormatterError, program.getName(), getMessageTextFailed() + " Cause: " + e.getMessage());
+//    }
+//
+//    protected void outErrorInconsistentProgram(Path programPath, Exception cause) {
+//        Console.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " No valid program. Cause: " + cause.getMessage());
+//    }
+//
+//    protected void outError(String message) {
+//        Console.out(outputFormatterError, message);
+//    }
+//
+//    protected void out(String message) {
+//        Console.out(outputFormatterNormal, message);
+//    }
 
     protected abstract String getOperationName();
 
@@ -109,6 +125,6 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
     protected abstract String getMessageTextFailed();
 
-    protected abstract void processProgram(Program program) throws ProgramManagerException;
+    protected abstract void processProgram(ExecutionContext executionContext, Program program) throws ProgramManagerException;
 
 }

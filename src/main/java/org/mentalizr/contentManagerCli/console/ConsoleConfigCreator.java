@@ -4,30 +4,30 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.option.OptionParserResult;
 import org.mentalizr.contentManagerCli.ContentManagerCli;
 
-public class OutputConfigCreator {
+public class ConsoleConfigCreator {
 
-    public static OutputConfig create(CliCall cliCall) {
+    public static ConsoleConfig create(CliCall cliCall) {
 
         OptionParserResult optionParserResult = cliCall.getOptionParserResultGlobal();
 
-        OutputConfigBuilder outputConfigBuilder = new OutputConfigBuilder();
+        ConsoleConfigBuilder consoleConfigBuilder = new ConsoleConfigBuilder();
 
         if (optionParserResult.hasOption(ContentManagerCli.OPTION_SILENT))
-            outputConfigBuilder.withOutputToConsole(false);
+            consoleConfigBuilder.withOutputToConsole(false);
 
         if (optionParserResult.hasOption(ContentManagerCli.OPTION_NO_COLOR))
-            outputConfigBuilder.withColorizedConsole(false);
+            consoleConfigBuilder.withColorizedConsole(false);
 
         if (optionParserResult.hasOption(ContentManagerCli.OPTION_LOGGER))
-            outputConfigBuilder.withOutputToLogger(true);
+            consoleConfigBuilder.withOutputToLogger(true);
 
         if (optionParserResult.hasOption(ContentManagerCli.OPTION_LOGGER_NAME)) {
             String loggerName = optionParserResult.getValue(ContentManagerCli.OPTION_LOGGER_NAME);
-            outputConfigBuilder.withOutputToLogger(true);
-            outputConfigBuilder.withLoggerName(loggerName);
+            consoleConfigBuilder.withOutputToLogger(true);
+            consoleConfigBuilder.withLoggerName(loggerName);
         }
 
-        return outputConfigBuilder.build();
+        return consoleConfigBuilder.build();
     }
 
 }
