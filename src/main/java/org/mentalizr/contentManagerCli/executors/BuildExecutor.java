@@ -8,6 +8,7 @@ import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.MdpBuildHandler;
+import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.contentManagerCli.console.ConsoleOutput;
 
 public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
@@ -39,13 +40,13 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     private void verboseOut(BuildSummary buildSummary) {
         for (MdpFile mdpFileSuccess : buildSummary.getSuccessfulMpdFiles()) {
-            ConsoleOutput.printOk(mdpFileSuccess.getId());
+            Console.okOut(mdpFileSuccess.getId());
         }
     }
 
     private void errorOut(BuildSummary buildSummary) {
         for (BuildFail buildFail : buildSummary.getFailedMdpFiles()) {
-            ConsoleOutput.printError(buildFail.getMdpFile().getId() + ": " + buildFail.getException().getMessage());
+            Console.errorOut(buildFail.getMdpFile().getId() + ": " + buildFail.getException().getMessage());
         }
     }
 
@@ -54,7 +55,7 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
                 + " mdp file" + (buildSummary.getTotalNrOfMdpFiles() > 1 ? "s" : "") + " compiled: "
                 + buildSummary.getNrOfSuccessfulMdpFiles() + " ok, "
                 + buildSummary.getNrOfFailedMdpFiles() + " failed.";
-        ConsoleOutput.printProgram(program, summary);
+        Console.programOut(program.getName(), summary);
     }
 
 }

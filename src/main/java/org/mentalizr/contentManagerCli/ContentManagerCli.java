@@ -26,14 +26,6 @@ public class ContentManagerCli {
 
     public static final String OPTION__CLEAN__FORCE = "clean__force";
 
-    private static final OutputFormatter outputFormatterError
-            = new OutputFormatterBuilder().withTypeError().build();
-    private static final OutputFormatter outputFormatterInternalError
-            = new OutputFormatterBuilder().withTypeInternalError().build();
-    private static final OutputFormatter outputFormatterNormal
-            = new OutputFormatterBuilder().withTypeNormal().build();
-
-
     private static Cli createCli() {
 
         Options globalOptions = new Options()
@@ -117,14 +109,14 @@ public class ContentManagerCli {
         Console.initialize(consoleConfig);
         String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
                 + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
-        Console.out(outputFormatterNormal, welcomeString);
+        Console.out(welcomeString);
 
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
-            Console.out(outputFormatterInternalError, e.getMessage());
+            Console.internalErrorOut(e.getMessage());
             if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());
             System.exit(1);
         }

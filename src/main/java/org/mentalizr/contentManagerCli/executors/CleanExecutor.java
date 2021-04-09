@@ -56,10 +56,10 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
         try {
             Program program = new Program(programPath);
             program.clean();
-            Console.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
+            Console.okProgramOut(program.getName(), getMessageTextSuccess());
             executionSummary.incSuccess();
         } catch (ProgramManagerException e) {
-            Console.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " Cause: " + e.getMessage());
+            Console.errorProgramOut(programPath.getFileName().toString(), getMessageTextFailed() + " Cause: " + e.getMessage());
             if (executionContext.isStacktrace()) Console.stacktrace(e);
             executionSummary.incFailed();
         }

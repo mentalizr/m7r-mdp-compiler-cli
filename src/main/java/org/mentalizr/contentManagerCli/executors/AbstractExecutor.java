@@ -9,10 +9,7 @@ import org.mentalizr.contentManager.exceptions.ProgramManagerException;
 import org.mentalizr.contentManagerCli.ContentManagerCliException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramDirs;
-import org.mentalizr.contentManagerCli.console.Console;
-import org.mentalizr.contentManagerCli.console.ConsoleOutput;
-import org.mentalizr.contentManagerCli.console.OutputFormatter;
-import org.mentalizr.contentManagerCli.console.OutputFormatterBuilder;
+import org.mentalizr.contentManagerCli.console.*;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,14 +52,14 @@ public abstract class AbstractExecutor implements CommandExecutor {
     protected List<Path> obtainProgramPaths(List<String> programs, ExecutionContext executionContext) throws CommandExecutorException {
         if (programs.size() == 0) {
             if (executionContext.isVerbose())
-                Console.out(outputFormatterNormal, "Target programs: all");
+                Console.out("Target programs: all");
             return ProgramDirs.getAllProgramDirs(executionContext.getContentRootPath());
         } else {
             if (executionContext.isVerbose())
-                Console.out(outputFormatterNormal, "Target programs: " + Strings.listing(programs, ", "));
+                Console.out("Target programs: " + Strings.listing(programs, ", "));
             List<Path> paths = ProgramDirs.getProgramDirs(executionContext.getContentRootPath(), programs);
             if (executionContext.isVerbose())
-                Console.out(outputFormatterNormal, "Found programs: " + Strings.listing(paths.stream().map(Path::toString).collect(Collectors.toList()), ", "));
+                Console.out("Found programs: " + Strings.listing(paths.stream().map(Path::toString).collect(Collectors.toList()), ", "));
             return paths;
         }
     }
@@ -73,7 +70,7 @@ public abstract class AbstractExecutor implements CommandExecutor {
             try {
                 programs.add(new Program(programPath));
             } catch (ProgramManagerException e) {
-                ConsoleOutput.printErrorNoValidProgram(programPath, getMessageTextFailed(), e);
+                Console.errorNoValidProgramOut(programPath.getFileName().toString(), getMessageTextFailed(), e);
 //                outErrorInconsistentProgram(programPath, e);
                 executionSummary.incFailed();
             }
@@ -85,10 +82,12 @@ public abstract class AbstractExecutor implements CommandExecutor {
         for (Program program : programs) {
             try {
                 processProgram(executionContext, program);
-                ConsoleOutput.printOk(program, getMessageTextSuccess());
+                Console.okProgramOut(program.getName(), getMessageTextSuccess());
+//                ConsoleOutput.printOk(program, getMessageTextSuccess());
                 executionSummary.incSuccess();
             } catch (ProgramManagerException e) {
-                ConsoleOutput.printError(program, getMessageTextFailed(), e);
+                Console.errorProgramOut(program.getName(), getMessageTextFailed());
+//                ConsoleOutput.printError(program, getMessageTextFailed(), e);
                 if (executionContext.isStacktrace()) Console.stacktrace(e);
                 executionSummary.incFailed();
             }
