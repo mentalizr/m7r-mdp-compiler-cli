@@ -5,8 +5,8 @@ import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.contentManager.Program;
-import org.mentalizr.contentManager.exceptions.ProgramManagerException;
-import org.mentalizr.contentManagerCli.ContentManagerCliException;
+import org.mentalizr.contentManager.exceptions.ConsistencyException;
+import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramDirs;
 import org.mentalizr.contentManagerCli.console.*;
@@ -18,22 +18,24 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractExecutor implements CommandExecutor {
 
-    protected static final OutputFormatter outputFormatterOk
-            = new OutputFormatterBuilder().withTypeOK().withProgramTag().build();
-    protected static final OutputFormatter outputFormatterOkSimple
-            = new OutputFormatterBuilder().withTypeOK().build();
-    protected static final OutputFormatter outputFormatterError
-            = new OutputFormatterBuilder().withTypeError().withProgramTag().build();
-    protected static final OutputFormatter outputFormatterNormal
-            = new OutputFormatterBuilder().withTypeNormal().build();
-
     @Override
     public void execute(CliCall cliCall) throws CommandExecutorException {
+
+//        System.out.println("execute ...");
+
         ExecutionContext executionContext = initExecutionContext(cliCall);
         ExecutionSummary executionSummary = new ExecutionSummary(getOperationName());
 
         List<Path> programPaths = obtainProgramPaths(cliCall.getParameterList(), executionContext);
+
+//        System.out.println("found program paths:");
+//        for (Path path : programPaths) System.out.println("    " + path);
+
         List<Program> programs = parseProgramRepos(executionSummary, programPaths);
+
+//        System.out.println("found programs:");
+//        for (Program program : programs) System.out.println("    " + program.getName());
+
         processPrograms(executionContext, executionSummary, programs);
 
         Console.summaryOut(executionSummary);
@@ -44,7 +46,7 @@ public abstract class AbstractExecutor implements CommandExecutor {
     protected ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
         try {
             return new ExecutionContext(cliCall);
-        } catch (ContentManagerCliException e) {
+        } catch (ConsistencyException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
     }
@@ -69,9 +71,8 @@ public abstract class AbstractExecutor implements CommandExecutor {
         for (Path programPath : programPaths) {
             try {
                 programs.add(new Program(programPath));
-            } catch (ProgramManagerException e) {
+            } catch (ContentManagerException e) {
                 Console.errorNoValidProgramOut(programPath.getFileName().toString(), getMessageTextFailed(), e);
-//                outErrorInconsistentProgram(programPath, e);
                 executionSummary.incFailed();
             }
         }
@@ -82,41 +83,14 @@ public abstract class AbstractExecutor implements CommandExecutor {
         for (Program program : programs) {
             try {
                 processProgram(executionContext, program);
-                Console.okProgramOut(program.getName(), getMessageTextSuccess());
-//                ConsoleOutput.printOk(program, getMessageTextSuccess());
                 executionSummary.incSuccess();
-            } catch (ProgramManagerException e) {
-                Console.errorProgramOut(program.getName(), getMessageTextFailed());
-//                ConsoleOutput.printError(program, getMessageTextFailed(), e);
+            } catch (ContentManagerException e) {
+                Console.errorProgramOut(program.getName(), e.getMessage());
                 if (executionContext.isStacktrace()) Console.stacktrace(e);
                 executionSummary.incFailed();
             }
         }
     }
-
-//    protected void outOk(Program program) {
-//        Console.out(outputFormatterOk, program.getName(), getMessageTextSuccess());
-//    }
-//
-//    protected void outOk(String message) {
-//        Console.out(outputFormatterOkSimple, message);
-//    }
-//
-//    protected void outError(Program program, Exception e) {
-//        Console.out(outputFormatterError, program.getName(), getMessageTextFailed() + " Cause: " + e.getMessage());
-//    }
-//
-//    protected void outErrorInconsistentProgram(Path programPath, Exception cause) {
-//        Console.out(outputFormatterError, programPath.getFileName().toString(), getMessageTextFailed() + " No valid program. Cause: " + cause.getMessage());
-//    }
-//
-//    protected void outError(String message) {
-//        Console.out(outputFormatterError, message);
-//    }
-//
-//    protected void out(String message) {
-//        Console.out(outputFormatterNormal, message);
-//    }
 
     protected abstract String getOperationName();
 
@@ -124,6 +98,6 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
     protected abstract String getMessageTextFailed();
 
-    protected abstract void processProgram(ExecutionContext executionContext, Program program) throws ProgramManagerException;
+    protected abstract void processProgram(ExecutionContext executionContext, Program program) throws ContentManagerException;
 
 }

@@ -22,7 +22,12 @@ public class RedOutputFormatter extends OutputFormatterNew {
     }
 
     @Override
-    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
-        printRedText(printStream, message);
+    protected String getColorizedString(String message, List<String> messageParameters) {
+        return getRedText(message);
     }
+
+//    @Override
+//    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
+//        printRedText(printStream, message);
+//    }
 }

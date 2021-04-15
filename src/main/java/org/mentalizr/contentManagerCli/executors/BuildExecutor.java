@@ -4,18 +4,19 @@ import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.build.BuildFail;
 import org.mentalizr.contentManager.build.BuildSummary;
-import org.mentalizr.contentManager.exceptions.ProgramManagerException;
+import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.MdpBuildHandler;
 import org.mentalizr.contentManagerCli.console.Console;
-import org.mentalizr.contentManagerCli.console.ConsoleOutput;
 
 public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
-    protected void processProgram(ExecutionContext executionContext, Program program) throws ProgramManagerException {
+    protected void processProgram(ExecutionContext executionContext, Program program) throws ContentManagerException {
+
         program.clean();
+
         BuildSummary buildSummary = program.build(new MdpBuildHandler());
 
         if (executionContext.isVerbose()) verboseOut(buildSummary);
@@ -30,7 +31,7 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
     protected String getMessageTextSuccess() {
-        return "Program build successfully.";
+        return "Program build successful.";
     }
 
     @Override
@@ -46,6 +47,7 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     private void errorOut(BuildSummary buildSummary) {
         for (BuildFail buildFail : buildSummary.getFailedMdpFiles()) {
+            System.out.println(buildFail.getMdpFile().getId());
             Console.errorOut(buildFail.getMdpFile().getId() + ": " + buildFail.getException().getMessage());
         }
     }
@@ -55,7 +57,11 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
                 + " mdp file" + (buildSummary.getTotalNrOfMdpFiles() > 1 ? "s" : "") + " compiled: "
                 + buildSummary.getNrOfSuccessfulMdpFiles() + " ok, "
                 + buildSummary.getNrOfFailedMdpFiles() + " failed.";
-        Console.programOut(program.getName(), summary);
+        if (buildSummary.isSuccess()) {
+            Console.okProgramOut(program.getName(), summary + " " + getMessageTextSuccess());
+        } else {
+            Console.errorProgramOut(program.getName(), summary + " " + getMessageTextFailed());
+        }
     }
 
 }

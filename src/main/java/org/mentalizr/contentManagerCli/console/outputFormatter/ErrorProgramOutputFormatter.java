@@ -22,11 +22,16 @@ public class ErrorProgramOutputFormatter extends OutputFormatterNew {
     }
 
     @Override
-    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
-        printRedTag(printStream, "Error");
-        printStream.print(" ");
-        printBlueTag(printStream, messageParameters.get(0));
-        printStream.println(" ");
-        printStream.println(message);
+    protected String getColorizedString(String message, List<String> messageParameters) {
+        return getRedTag("Error") + " " + getBlueTag(messageParameters.get(0)) + " " + message;
     }
+
+//    @Override
+//    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
+//        printRedTag(printStream, "Error");
+//        printStream.print(" ");
+//        printBlueTag(printStream, messageParameters.get(0));
+//        printStream.println(" ");
+//        printStream.println(message);
+//    }
 }

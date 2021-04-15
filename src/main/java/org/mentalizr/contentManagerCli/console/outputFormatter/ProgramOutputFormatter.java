@@ -22,9 +22,14 @@ public class ProgramOutputFormatter extends OutputFormatterNew {
     }
 
     @Override
-    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
-        printBlueTag(printStream, messageParameters.get(0));
-        printStream.println(" ");
-        printStream.println(message);
+    protected String getColorizedString(String message, List<String> messageParameters) {
+        return getBlueTag(messageParameters.get(0)) + " " + message;
     }
+
+//    @Override
+//    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
+//        printBlueTag(printStream, messageParameters.get(0));
+//        printStream.println(" ");
+//        printStream.println(message);
+//    }
 }

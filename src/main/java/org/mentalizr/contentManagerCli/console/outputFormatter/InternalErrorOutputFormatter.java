@@ -22,9 +22,14 @@ public class InternalErrorOutputFormatter extends OutputFormatterNew {
     }
 
     @Override
-    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
-        printRedTag(printStream, "Internal Error");
-        printStream.print(" ");
-        printStream.println(message);
+    protected String getColorizedString(String message, List<String> messageParameters) {
+        return getRedTag("Internal Error") + " " + message;
     }
+
+//    @Override
+//    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
+//        printRedTag(printStream, "Internal Error");
+//        printStream.print(" ");
+//        printStream.println(message);
+//    }
 }

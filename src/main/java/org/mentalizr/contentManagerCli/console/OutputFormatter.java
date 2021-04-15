@@ -52,19 +52,21 @@ public class OutputFormatter {
     private static void writeSummaryToConsole(ConsoleConfig consoleConfig, ExecutionSummary executionSummary) {
         if (!consoleConfig.isToConsole()) return;
 
+        String operation = ("m7r content " + executionSummary.getOperation()).toUpperCase(Locale.ROOT);
+
         if (consoleConfig.isColorizedConsole()) {
             if (executionSummary.isSuccessful()) {
                 consoleConfig.getOut().println();
-                consoleConfig.getOut().println(Ansi.colorize(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " SUCCESSFUL", okFormat));
+                consoleConfig.getOut().println(Ansi.colorize(operation + " SUCCESSFUL", okFormat));
             } else {
                 consoleConfig.getErrorOut().println();
-                consoleConfig.getErrorOut().println(Ansi.colorize(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED", errorFormat));
+                consoleConfig.getErrorOut().println(Ansi.colorize(operation + " FAILED", errorFormat));
             }
         } else {
             if (executionSummary.isSuccessful()) {
-                consoleConfig.getOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " SUCCESSFUL");
+                consoleConfig.getOut().println(operation + " SUCCESSFUL");
             } else {
-                consoleConfig.getErrorOut().println(executionSummary.getOperation().toUpperCase(Locale.ROOT) + " FAILED");
+                consoleConfig.getErrorOut().println(operation + " FAILED");
             }
         }
         String summary = executionSummary.getTotalExecutions()

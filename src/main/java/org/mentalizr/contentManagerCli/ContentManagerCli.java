@@ -11,6 +11,7 @@ import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 import de.arthurpicht.cli.parameter.ParametersOne;
+import org.mentalizr.contentManager.exceptions.ConsistencyException;
 import org.mentalizr.contentManagerCli.console.*;
 import org.mentalizr.contentManagerCli.executors.*;
 
@@ -114,6 +115,13 @@ public class ContentManagerCli {
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
+            if (e.getCause() != null && e.getCause() instanceof ConsistencyException) {
+                Console.errorOut(e.getMessage());
+                if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());
+//            } else {
+//                System.out.println("CommandExecutorException: " + e.getMessage() );
+//                e.printStackTrace();
+            }
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
             Console.internalErrorOut(e.getMessage());

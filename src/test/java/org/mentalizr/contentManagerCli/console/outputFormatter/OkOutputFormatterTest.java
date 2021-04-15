@@ -3,6 +3,7 @@ package org.mentalizr.contentManagerCli.console.outputFormatter;
 import org.junit.jupiter.api.Test;
 import org.mentalizr.contentManagerCli.console.ConsoleConfig;
 import org.mentalizr.contentManagerCli.console.ConsoleConfigBuilder;
+import org.mentalizr.contentManagerCli.utils.Unicode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -44,22 +45,23 @@ class OkOutputFormatterTest {
         okOutputFormatter.out(message);
 
         String consoleOutput = outBAOS.toString();
+        String consoleOutputEscaped = Unicode.escape(consoleOutput);
 
-        System.out.println(consoleOutput.length());
+//        System.out.println(consoleOutput.length());
 
-        String string = consoleOutput;
-        for (int i = 0; i < string.length(); i++) {
-            System.out.print(string.charAt(i) + " ");
-        }
-        System.out.println();
+//        String string = consoleOutput;
+//        for (int i = 0; i < string.length(); i++) {
+//            System.out.print(string.charAt(i) + " ");
+//        }
+//        System.out.println();
 
         System.out.println("\u001B[32;1m[OK]\u001B[0m This is a test message.");
 
         System.out.println("Codepoint ad 0: " + consoleOutput.codePointAt(0));
 
-        assertEquals("[OK] This is a test message.", consoleOutput);
+        assertEquals("\\u001B[32;1m[OK]\\u001B[0m This is a test message.\\n", consoleOutputEscaped);
 
-        String a = "[OK] This is a test message.";
+//        String a = "[OK] This is a test message.";
     }
 
     @Test

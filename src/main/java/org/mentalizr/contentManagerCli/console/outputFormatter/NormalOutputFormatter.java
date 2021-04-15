@@ -22,7 +22,12 @@ public class NormalOutputFormatter extends OutputFormatterNew {
     }
 
     @Override
-    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
-        printStream.println(message);
+    protected String getColorizedString(String message, List<String> messageParameters) {
+        return message;
     }
+
+//    @Override
+//    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
+//        printStream.println(message);
+//    }
 }

@@ -39,54 +39,80 @@ public abstract class OutputFormatterNew {
 
     protected abstract String getPlainString(String message, List<String> messageParameters);
 
-    protected abstract void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters);
+    protected abstract String getColorizedString(String message, List<String> messageParameters);
+
+//    protected abstract void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters);
 
     private void writeToLogger(Destination destination, String message, List<String> messageParameters) {
         // TODO
     }
 
     private void writeToPlainConsole(Destination destination, String message, List<String> messageParameters) {
-        String output = getPlainString(message, messageParameters);
-        if (destination == Destination.OUT) {
-            this.consoleConfig.getOut().println(output);
-        } else {
-            this.consoleConfig.getErrorOut().println(output);
-        }
+        String outputString = getPlainString(message, messageParameters);
+        PrintStream out = getPrintStream(destination);
+        out.println(outputString);
     }
 
     private void writeColorizedConsole(Destination destination, String message, List<String> messageParameters) {
-        PrintStream out;
+        String outputString = getColorizedString(message, messageParameters);
+        PrintStream out = getPrintStream(destination);
+        out.println(outputString);
+    }
+
+    private PrintStream getPrintStream(Destination destination) {
         if (destination == Destination.OUT) {
-            out = consoleConfig.getOut();
+            return consoleConfig.getOut();
         } else {
-            out = consoleConfig.getErrorOut();
+            return consoleConfig.getErrorOut();
         }
-        writeColorizedConsole(out, message, messageParameters);
-
     }
 
-    public static void printRedTag(PrintStream printStream, String tag) {
-        printStream.print(Ansi.colorize("[" + tag + "]", redText));
+    public static String getRedTag(String tag) {
+        return Ansi.colorize("[" + tag + "]", redText);
     }
 
-    public static void printRedText(PrintStream printStream, String text) {
-        printStream.print(Ansi.colorize(text, redText));
+    public static String getRedText(String text) {
+        return Ansi.colorize(text, redText);
     }
 
-    public static void printGreenTag(PrintStream printStream, String tag) {
-        printStream.print(Ansi.colorize("[" + tag + "]", greenText));
+    public static String getGreenTag(String tag) {
+        return Ansi.colorize("[" + tag + "]", greenText);
     }
 
-    public static void printGreenText(PrintStream printStream, String text) {
-        printStream.print(Ansi.colorize(text, greenText));
+    public static String getGreenText(String text) {
+        return Ansi.colorize(text, greenText);
     }
 
-    public static void printBlueTag(PrintStream printStream, String tag) {
-        printStream.print(Ansi.colorize("[" + tag + "]", blueText));
+    public static String getBlueTag(String tag) {
+        return Ansi.colorize("[" + tag + "]", blueText);
     }
 
-    public static void printBlueText(PrintStream printStream, String text) {
-        printStream.print(Ansi.colorize(text, blueText));
+    public static String getBlueText(String text) {
+        return Ansi.colorize(text, blueText);
     }
+
+//    public static void printRedTag(PrintStream printStream, String tag) {
+//        printStream.print(Ansi.colorize("[" + tag + "]", redText));
+//    }
+//
+//    public static void printRedText(PrintStream printStream, String text) {
+//        printStream.print(Ansi.colorize(text, redText));
+//    }
+//
+//    public static void printGreenTag(PrintStream printStream, String tag) {
+//        printStream.print(Ansi.colorize("[" + tag + "]", greenText));
+//    }
+//
+//    public static void printGreenText(PrintStream printStream, String text) {
+//        printStream.print(Ansi.colorize(text, greenText));
+//    }
+//
+//    public static void printBlueTag(PrintStream printStream, String tag) {
+//        printStream.print(Ansi.colorize("[" + tag + "]", blueText));
+//    }
+//
+//    public static void printBlueText(PrintStream printStream, String text) {
+//        printStream.print(Ansi.colorize(text, blueText));
+//    }
 
 }

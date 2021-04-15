@@ -22,9 +22,14 @@ public class OkOutputFormatter extends OutputFormatterNew {
     }
 
     @Override
-    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
-        printGreenTag(printStream, "OK");
-        printStream.print(" ");
-        printStream.println(message);
+    protected String getColorizedString(String message, List<String> messageParameters) {
+        return getGreenTag("OK") + " " + message;
     }
+
+//    @Override
+//    protected void writeColorizedConsole(PrintStream printStream, String message, List<String> messageParameters) {
+//        printGreenTag(printStream, "OK");
+//        printStream.print(" ");
+//        printStream.println(message);
+//    }
 }
