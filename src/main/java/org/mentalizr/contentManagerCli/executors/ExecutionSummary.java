@@ -2,7 +2,7 @@ package org.mentalizr.contentManagerCli.executors;
 
 public class ExecutionSummary {
 
-    private String operation;
+    private final String operation;
     private int successfulExecutions;
     private int failedExecutions;
 
@@ -11,10 +11,6 @@ public class ExecutionSummary {
         this.successfulExecutions = 0;
         this.failedExecutions = 0;
     }
-
-//    public void setOperation(String operation) {
-//        this.operation = operation;
-//    }
 
     public String getOperation() {
         return this.operation;

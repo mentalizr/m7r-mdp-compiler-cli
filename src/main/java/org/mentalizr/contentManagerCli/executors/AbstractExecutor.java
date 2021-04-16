@@ -81,12 +81,11 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
     private void processPrograms(ExecutionContext executionContext, ExecutionSummary executionSummary, List<Program> programs) throws CommandExecutorException {
         for (Program program : programs) {
-            try {
-                processProgram(executionContext, program);
+            boolean success = processProgram(executionContext, program);
+
+            if (success) {
                 executionSummary.incSuccess();
-            } catch (ContentManagerException e) {
-                Console.errorProgramOut(program.getName(), e.getMessage());
-                if (executionContext.isStacktrace()) Console.stacktrace(e);
+            } else {
                 executionSummary.incFailed();
             }
         }
@@ -98,6 +97,6 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
     protected abstract String getMessageTextFailed();
 
-    protected abstract void processProgram(ExecutionContext executionContext, Program program) throws ContentManagerException;
+    protected abstract boolean processProgram(ExecutionContext executionContext, Program program);
 
 }

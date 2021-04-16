@@ -3,15 +3,11 @@ package org.mentalizr.contentManagerCli.executors;
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
-import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.contentManager.fileHierarchy.levels.contentRoot.HtmlDir;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.console.Console;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -46,7 +42,7 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
     }
 
     @Override
-    protected void processProgram(ExecutionContext executionContext, Program program) {
+    protected boolean processProgram(ExecutionContext executionContext, Program program) {
         throw new RuntimeException("Intentionally not implemented.");
     }
 

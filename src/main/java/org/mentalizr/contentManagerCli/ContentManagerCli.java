@@ -110,7 +110,7 @@ public class ContentManagerCli {
         Console.initialize(consoleConfig);
         String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
                 + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
-        Console.out(welcomeString);
+        Console.out(welcomeString + "\n");
 
         try {
             cli.execute(cliCall);

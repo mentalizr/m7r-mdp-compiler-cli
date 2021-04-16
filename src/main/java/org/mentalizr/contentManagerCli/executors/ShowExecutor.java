@@ -4,6 +4,7 @@ import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
+import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
 
 public class ShowExecutor extends AbstractExecutor implements CommandExecutor {
@@ -24,12 +25,14 @@ public class ShowExecutor extends AbstractExecutor implements CommandExecutor {
     }
 
     @Override
-    protected void processProgram(ExecutionContext executionContext, Program program) throws ContentManagerException {
+    protected boolean processProgram(ExecutionContext executionContext, Program program) {
         if (program.isBuilt()) {
             org.mentalizr.serviceObjects.frontend.program.Program programSO = program.asProgram();
             System.out.println(ProgramSOX.toJsonWithFormatting(programSO));
+            return true;
         } else {
-            throw new ContentManagerException("Program not built yet.");
+            Console.errorProgramOut(program.getName(), "Program not built yet.");
+            return false;
         }
     }
 
