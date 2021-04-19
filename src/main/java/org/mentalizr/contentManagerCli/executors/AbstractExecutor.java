@@ -13,6 +13,8 @@ import org.mentalizr.contentManagerCli.console.*;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +57,9 @@ public abstract class AbstractExecutor implements CommandExecutor {
         if (programs.size() == 0) {
             if (executionContext.isVerbose())
                 Console.out("Target programs: all");
-            return ProgramDirs.getAllProgramDirs(executionContext.getContentRootPath());
+            List<Path> paths = ProgramDirs.getAllProgramDirs(executionContext.getContentRootPath());
+            paths.sort(Comparator.comparing(Path::getFileName));
+            return paths;
         } else {
             if (executionContext.isVerbose())
                 Console.out("Target programs: " + Strings.listing(programs, ", "));

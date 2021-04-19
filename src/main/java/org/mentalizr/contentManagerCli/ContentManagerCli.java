@@ -105,12 +105,16 @@ public class ContentManagerCli {
         }
 
         boolean showStacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
+        boolean isVerbose = cliCall.getOptionParserResultGlobal().hasOption(OPTION_VERBOSE);
 
         ConsoleConfig consoleConfig = ConsoleConfigCreator.create(cliCall);
         Console.initialize(consoleConfig);
-        String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
-                + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
-        Console.out(welcomeString + "\n");
+
+        if (isVerbose) {
+            String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
+                    + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
+            Console.out(welcomeString + "\n");
+        }
 
         try {
             cli.execute(cliCall);
