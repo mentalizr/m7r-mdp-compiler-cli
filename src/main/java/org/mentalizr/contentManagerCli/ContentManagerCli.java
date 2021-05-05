@@ -63,10 +63,18 @@ public class ContentManagerCli {
         );
 
         commands.add(new CommandSequenceBuilder()
-                .addCommands("show")
-                .withParameters(new ParametersMin(0, "program", "programs to be built"))
-                .withCommandExecutor(new ShowExecutor())
+                .addCommands("show", "structure")
+                .withParameters(new ParametersMin(0, "program", "programs to be shown"))
+                .withCommandExecutor(new ShowStructureExecutor())
                 .withDescription("Shows program structure for specified programs or for all programs if none is specified.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("show", "mediaResources")
+                .withParameters(new ParametersMin(0, "program", "programs to be shown"))
+                .withCommandExecutor(new ShowMediaResourcesExecutor())
+                .withDescription("Lists all media resources that are referenced in specified programs.")
                 .build()
         );
 

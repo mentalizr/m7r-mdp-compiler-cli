@@ -7,11 +7,11 @@ import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
 
-public class ShowExecutor extends AbstractExecutor implements CommandExecutor {
+public class ShowStructureExecutor extends AbstractExecutor implements CommandExecutor {
 
     @Override
     protected String getOperationName() {
-        return "show";
+        return "show structure";
     }
 
     @Override
