@@ -7,7 +7,7 @@ import org.mentalizr.contentManager.build.BuildSummary;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManagerCli.ExecutionContext;
-import org.mentalizr.contentManagerCli.MdpBuildHandler;
+import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandlerFactory;
 import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.mdpCompiler.MDPSyntaxError;
 
@@ -19,7 +19,7 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
         BuildSummary buildSummary;
         try {
             program.clean();
-            buildSummary = program.build(new MdpBuildHandler());
+            buildSummary = program.build(new MdpBuildHandlerFactory());
         } catch (ContentManagerException e) {
             Console.errorProgramOut(program.getName(), e.getMessage());
             if (executionContext.isStacktrace()) e.printStackTrace();

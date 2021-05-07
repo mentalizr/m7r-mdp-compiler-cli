@@ -3,10 +3,17 @@ package org.mentalizr.contentManagerCli.executors;
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
+import org.mentalizr.contentManager.Program;
+import org.mentalizr.contentManager.buildHandler.BuildHandler;
+import org.mentalizr.contentManager.buildHandler.BuildHandlerException;
+import org.mentalizr.contentManager.buildHandler.BuildHandlerFactory;
 import org.mentalizr.contentManager.exceptions.ConsistencyException;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManagerCli.ExecutionContext;
+import org.mentalizr.contentManagerCli.buildHandler.BuildHandlerExceptionHelper;
+import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandler;
+import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandlerFactory;
 import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.contentManagerCli.helper.ContentId;
 import org.mentalizr.contentManagerCli.helper.ContentIdException;
@@ -15,6 +22,7 @@ import org.mentalizr.mdpCompiler.MDPSyntaxError;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class CheckExecutor implements CommandExecutor {
@@ -24,8 +32,9 @@ public class CheckExecutor implements CommandExecutor {
         ExecutionContext executionContext = initExecutionContext(cliCall);
         String contentIdString = getParameter(cliCall);
         ContentId contentId = obtainContentId(contentIdString);
+        Program program = obtainProgram(executionContext, contentId);
         MdpFile mdpFile = obtainMdpFile(executionContext, contentId);
-        checkMdpFile(executionContext, mdpFile);
+        checkMdpFile(mdpFile, program, executionContext);
     }
 
     private ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
@@ -51,6 +60,14 @@ public class CheckExecutor implements CommandExecutor {
         }
     }
 
+    private Program obtainProgram(ExecutionContext executionContext, ContentId contentId) throws CommandExecutorException {
+        try {
+            return new Program(executionContext.getContentRootPath().resolve(contentId.getProgramId()));
+        } catch (ContentManagerException e) {
+            throw new CommandExecutorException(e);
+        }
+    }
+
     private MdpFile obtainMdpFile(ExecutionContext executionContext, ContentId contentId) throws CommandExecutorException {
 
         Path mdpFile = contentId.getPathToMdpFile(executionContext.getContentRootPath());
@@ -62,17 +79,22 @@ public class CheckExecutor implements CommandExecutor {
         }
     }
 
-    private void checkMdpFile(ExecutionContext executionContext, MdpFile mdpFile) throws CommandExecutorException {
+    private void checkMdpFile(MdpFile mdpFile, Program program, ExecutionContext executionContext) throws CommandExecutorException {
+        BuildHandlerFactory buildHandlerFactory = new MdpBuildHandlerFactory();
+        BuildHandler buildHandler = buildHandlerFactory.createBuildHandler(program, mdpFile);
+
         try {
-            MDPCompiler.compile(mdpFile.asFile());
+            buildHandler.compile();
             Console.okOut("[" + mdpFile.asPath().toAbsolutePath() + "]");
-        } catch (IOException e) {
+        } catch (BuildHandlerException e) {
+            if (BuildHandlerExceptionHelper.hasMdpSyntaxErrorAsCause(e)) {
+                MDPSyntaxError mdpSyntaxError = BuildHandlerExceptionHelper.getCauseAsMDPSyntaxError(e);
+                Console.errorOut(MDPSyntaxError.getExtendedMessage(mdpFile.asPath(), mdpSyntaxError));
+            } else {
+                Console.errorOut(e.getMessage());
+            }
             if (executionContext.isStacktrace()) e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (MDPSyntaxError mdpSyntaxError) {
-            Console.errorOut(MDPSyntaxError.getExtendedMessage(mdpFile.asPath(), mdpSyntaxError));
-            if (executionContext.isStacktrace()) mdpSyntaxError.printStackTrace();
-            throw new CommandExecutorException(mdpSyntaxError);
+            throw new CommandExecutorException();
         }
     }
 

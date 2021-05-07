@@ -4,7 +4,7 @@ import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
-import org.mentalizr.contentManagerCli.MdpBuildHandler;
+import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandlerFactory;
 import org.mentalizr.contentManagerCli.console.Console;
 
 import java.util.Set;
@@ -30,7 +30,7 @@ public class ShowMediaResourcesExecutor extends AbstractExecutor implements Comm
     protected boolean processProgram(ExecutionContext executionContext, Program program) {
         if (program.isBuilt()) {
             try {
-                Set<String> referencedMediaResources = program.getReferencedMediaResources(new MdpBuildHandler());
+                Set<String> referencedMediaResources = program.getReferencedMediaResources(new MdpBuildHandlerFactory());
                 referencedMediaResources.forEach(System.out::println);
                 return true;
             } catch (ContentManagerException e) {
