@@ -12,8 +12,11 @@ import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 import de.arthurpicht.cli.parameter.ParametersOne;
 import org.mentalizr.contentManager.exceptions.ConsistencyException;
-import org.mentalizr.contentManagerCli.console.*;
+import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.contentManagerCli.console.ConsoleConfig;
+import org.mentalizr.contentManagerCli.console.ConsoleConfigCreator;
 import org.mentalizr.contentManagerCli.executors.*;
+import org.mentalizr.mdpCompiler.Const;
 
 public class ContentManagerCli {
 
@@ -25,8 +28,6 @@ public class ContentManagerCli {
     public static final String OPTION_LOGGER_NAME = "logger_name";
     public static final String OPTION_NO_COLOR = "no_color";
 
-    public static final String OPTION__CLEAN__FORCE = "clean__force";
-
     private static Cli createCli() {
 
         Options globalOptions = new Options()
@@ -36,7 +37,7 @@ public class ContentManagerCli {
                 .add(new OptionBuilder().withShortName('p').withLongName("content-root").withArgumentName("path").withDescription("Path to content root directory.").build(OPTION_CONTENT_ROOT))
                 .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE))
                 .add(new OptionBuilder().withLongName("silent").withDescription("Make no output to console.").build(OPTION_SILENT))
-                .add(new OptionBuilder().withLongName("no-color").withDescription("Ommit colorization on console output.").build(OPTION_NO_COLOR))
+                .add(new OptionBuilder().withLongName("no-color").withDescription("Omit colorization on console output.").build(OPTION_NO_COLOR))
                 .add(new OptionBuilder().withShortName('l').withLongName("logger").withDescription("Print output to logger.").build(OPTION_LOGGER))
                 .add(new OptionBuilder().withLongName("logger-name").withDescription("Name of logger. Default is 'org.mentalizr.contentManagerCli'.").build(OPTION_LOGGER_NAME));
 
@@ -88,8 +89,7 @@ public class ContentManagerCli {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("mentalizr content manager CLI\nhttps://github.com/mentalizr/m7r-content-manager-cli")
-                .withVersion("0.1-SNAPSHOT")
-                .withDate("2021-03-21")
+                .withVersionByTag("0.1-SNAPSHOT", "2021-03-21", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
                 .build("m7r-cm");
 
         return new CliBuilder()
@@ -97,7 +97,6 @@ public class ContentManagerCli {
                 .withCommands(commands)
                 .withAutoHelp()
                 .build(cliDescription);
-
     }
 
     public static void main(String[] args) {
@@ -120,7 +119,7 @@ public class ContentManagerCli {
 
         if (isVerbose) {
             String welcomeString = cliCall.getCliDefinition().getCliDescription().getDescriptionFirstLine()
-                    + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersion();
+                    + " - Version " + cliCall.getCliDefinition().getCliDescription().getVersionText();
             Console.out(welcomeString + "\n");
         }
 
