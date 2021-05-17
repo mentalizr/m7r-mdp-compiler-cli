@@ -5,6 +5,7 @@ import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
 
 public class ShowStructureExecutor extends AbstractExecutor implements CommandExecutor {
@@ -27,7 +28,7 @@ public class ShowStructureExecutor extends AbstractExecutor implements CommandEx
     @Override
     protected boolean processProgram(ExecutionContext executionContext, Program program) {
         if (program.isBuilt()) {
-            org.mentalizr.serviceObjects.frontend.program.Program programSO = program.asProgram();
+            ProgramSO programSO = program.asProgram();
             System.out.println(ProgramSOX.toJsonWithFormatting(programSO));
             return true;
         } else {

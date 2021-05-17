@@ -128,11 +128,10 @@ public class ContentManagerCli {
         } catch (CommandExecutorException e) {
             if (e.getCause() != null && e.getCause() instanceof ConsistencyException) {
                 Console.errorOut(e.getMessage());
-                if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());
-//            } else {
-//                System.out.println("CommandExecutorException: " + e.getMessage() );
-//                e.printStackTrace();
+            } else {
+                Console.errorOut("CommandExecutorException: " + e.getMessage() );
             }
+            if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());
             System.exit(1);
         } catch (RuntimeException | AssertionError e) {
             Console.internalErrorOut(e.getMessage());

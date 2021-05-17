@@ -37,7 +37,7 @@ public class ProgramDirs {
 
     private static List<Path> getCheckedSubdirectories(Path dir) throws CommandExecutorException {
         try {
-            List<Path> programDirs = Nio2Helper.getSubdirectories(dir);
+            List<Path> programDirs = Nio2Helper.getActiveSubdirectories(dir);
             for (Path programDir : programDirs) {
                 String programName = programDir.getFileName().toString();
                 assertValidProgramName(programName);
