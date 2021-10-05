@@ -2,11 +2,13 @@ package org.mentalizr.contentManagerCli.executors;
 
 import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
-import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.contentManager.programStructure.ProgramStructure;
 import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.console.Console;
-import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
-import org.mentalizr.serviceObjects.frontend.program.ProgramSOX;
+
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbConfig;
 
 public class ShowStructureExecutor extends AbstractExecutor implements CommandExecutor {
 
@@ -28,8 +30,11 @@ public class ShowStructureExecutor extends AbstractExecutor implements CommandEx
     @Override
     protected boolean processProgram(ExecutionContext executionContext, Program program) {
         if (program.isBuilt()) {
-            ProgramSO programSO = program.asProgram();
-            System.out.println(ProgramSOX.toJsonWithFormatting(programSO));
+            ProgramStructure programStructure = program.asProgramStructure();
+
+            Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
+            System.out.println(jsonb.toJson(programStructure));
+
             return true;
         } else {
             Console.errorProgramOut(program.getName(), "Program not built yet.");
