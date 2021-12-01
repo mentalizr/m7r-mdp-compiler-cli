@@ -22,9 +22,11 @@ dependencies {
     implementation 'org.mentalizr:mdp-compiler:0.0.9-SNAPSHOT'
     implementation 'org.mentalizr:m7r-service-objects:0.0.1-SNAPSHOT'
 
-    implementation 'com.github.arthurpicht:cli:095c04163a'
+//    implementation 'com.github.arthurpicht:cli:095c04163a'
+    implementation 'com.github.arthurpicht:cli:0.1-beta1'
     implementation 'com.github.arthurpicht:utils-core:1.2.1'
-    implementation 'com.github.arthurpicht:utils-io:08e8e6f0fb'
+//    implementation 'com.github.arthurpicht:utils-io:08e8e6f0fb'
+    implementation 'com.github.arthurpicht:utils-io:0.0.5'
 
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
     implementation 'org.glassfish.jersey.media:jersey-media-json-binding:2.32'
@@ -44,6 +46,7 @@ task extractDependencies(type: Copy, dependsOn: jar) {
 }
 
 task fatJar(type: Jar, dependsOn: extractDependencies) {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes 'Main-Class': 'org.mentalizr.contentManagerCli.ContentManagerCli'
         attributes 'Version': project.property("version")
