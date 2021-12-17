@@ -13,7 +13,7 @@ public class ErrorNoValidProgramOutputFormatter extends OutputFormatterNew {
     }
 
     public void out(String programName, String message, Exception cause) {
-        super.out(Destination.ERROR, message + " No valid program. Cause: " + cause.getMessage(), programName);
+        super.out(Destination.ERROR, message + " Program validation failed. Cause: " + cause.getMessage(), programName);
     }
 
     @Override

@@ -11,7 +11,8 @@ import de.arthurpicht.cli.option.Options;
 import de.arthurpicht.cli.option.VersionOption;
 import de.arthurpicht.cli.parameter.ParametersMin;
 import de.arthurpicht.cli.parameter.ParametersOne;
-import org.mentalizr.contentManager.exceptions.ConsistencyException;
+import de.arthurpicht.utils.core.strings.Strings;
+import org.mentalizr.contentManager.exceptions.InconsistencyException;
 import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.contentManagerCli.console.ConsoleConfig;
 import org.mentalizr.contentManagerCli.console.ConsoleConfigCreator;
@@ -89,7 +90,7 @@ public class ContentManagerCli {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("mentalizr content manager CLI\nhttps://github.com/mentalizr/m7r-content-manager-cli")
-                .withVersionByTag("0.1-SNAPSHOT", "2021-03-21", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
+                .withVersionByTag("0.1-SNAPSHOT", "2021-12-16", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
                 .build("m7r-cm");
 
         return new CliBuilder()
@@ -126,10 +127,12 @@ public class ContentManagerCli {
         try {
             cli.execute(cliCall);
         } catch (CommandExecutorException e) {
-            if (e.getCause() != null && e.getCause() instanceof ConsistencyException) {
+            if (e.getCause() != null && e.getCause() instanceof InconsistencyException) {
                 Console.errorOut(e.getMessage());
             } else {
-                Console.errorOut("CommandExecutorException: " + e.getMessage() );
+                if (Strings.isSpecified(e.getMessage())) {
+                    Console.errorOut("CommandExecutorException: " + e.getMessage() );
+                }
             }
             if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());
             System.exit(1);

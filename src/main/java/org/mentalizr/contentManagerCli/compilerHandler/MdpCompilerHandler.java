@@ -1,11 +1,8 @@
-package org.mentalizr.contentManagerCli.buildHandler;
+package org.mentalizr.contentManagerCli.compilerHandler;
 
-import de.arthurpicht.utils.core.collection.Sets;
 import org.mentalizr.contentManager.Program;
-import org.mentalizr.contentManager.buildHandler.BuildHandler;
-import org.mentalizr.contentManager.buildHandler.BuildHandlerException;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.contentManager.fileHierarchy.exceptions.MediaResourceReferenceInconsistencyException;
+import org.mentalizr.contentManager.fileHierarchy.exceptions.MediaNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManager.helper.SetHelper;
 import org.mentalizr.mdpCompiler.Dom;
@@ -16,52 +13,53 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class MdpBuildHandler implements BuildHandler {
+public class MdpCompilerHandler implements CompilerHandler {
 
     private final Program program;
     private final MdpFile mdpFile;
 
-    public MdpBuildHandler(Program program, MdpFile mdpFile) {
+    public MdpCompilerHandler(Program program, MdpFile mdpFile) {
         this.program = program;
         this.mdpFile = mdpFile;
     }
 
     @Override
-    public List<String> compile() throws BuildHandlerException {
+    public CompilerHandlerResult compile() throws CompilerHandlerException, MDPSyntaxError, MediaNotFoundException {
         Dom dom = createDom();
-        checkMediaReferenceIntegrity(dom);
-        return MDPCompiler.render(dom).getResultLines();
+        Set<String> mediaResources = checkMediaReferenceIntegrity(dom);
+        List<String> html = MDPCompiler.render(dom).getLines();
+        return new CompilerHandlerResult(html, mediaResources);
     }
 
     @Override
-    public Set<String> getReferencedMediaResources() throws BuildHandlerException {
+    public Set<String> getReferencedMediaResources() throws CompilerHandlerException {
         try {
             return MDPCompiler.getReferencedMediaResources(this.mdpFile.asFile());
         } catch (IOException | MDPSyntaxError e) {
-            throw new BuildHandlerException(this.mdpFile, e);
+            throw new CompilerHandlerException(this.mdpFile, e);
         }
     }
 
-    private Dom createDom() throws BuildHandlerException {
+    private Dom createDom() throws CompilerHandlerException, MDPSyntaxError {
         try {
             return MDPCompiler.createDom(this.mdpFile.asFile());
-        } catch (IOException | MDPSyntaxError e) {
-            throw new BuildHandlerException(this.mdpFile, e);
+        } catch (IOException e) {
+            throw new CompilerHandlerException(this.mdpFile, e);
         }
     }
 
-    private void checkMediaReferenceIntegrity(Dom dom) throws BuildHandlerException {
+    private Set<String> checkMediaReferenceIntegrity(Dom dom) throws CompilerHandlerException, MediaNotFoundException {
         Set<String> referencedMediaResources = dom.getReferencedMediaResources();
         try {
             Set<String> availableMediaResources = this.program.getAllMediaResourceNames();
             Set<String> deReferencedMediaFiles = SetHelper.subtract(referencedMediaResources, availableMediaResources);
             if (!deReferencedMediaFiles.isEmpty()) {
-                String mediaFile = Sets.getSomeElement(deReferencedMediaFiles);
-                throw new MediaResourceReferenceInconsistencyException(mediaFile);
+                throw new MediaNotFoundException(this.mdpFile, deReferencedMediaFiles);
             }
         } catch (ContentManagerException e) {
-            throw new BuildHandlerException(this.mdpFile, e);
+            throw new CompilerHandlerException(this.mdpFile, e);
         }
+        return referencedMediaResources;
     }
 
 }

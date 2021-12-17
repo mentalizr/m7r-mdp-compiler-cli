@@ -13,10 +13,11 @@ import java.util.List;
 
 public class ProgramDirs {
 
-    public static List<Path> getProgramDirs(Path contentRootDir, List<String> programNames) throws CommandExecutorException {
-        List<Path> programPaths = new ArrayList<>();
+    public static List<ProgramPath> getProgramDirs(Path contentRootDir, List<String> programNames) throws CommandExecutorException {
+        List<ProgramPath> programPaths = new ArrayList<>();
         for (String programName : programNames) {
-            programPaths.add(getProgramDir(contentRootDir, programName));
+            Path programDir = getProgramDir(contentRootDir, programName);
+            programPaths.add(new ProgramPath(programDir));
         }
         return programPaths;
     }
@@ -30,19 +31,21 @@ public class ProgramDirs {
         return programPath;
     }
 
-    public static List<Path> getAllProgramDirs(Path contentRootDir) throws CommandExecutorException {
+    public static List<ProgramPath> getAllProgramPaths(Path contentRootDir) throws CommandExecutorException {
         ConsistencyCheck.assertIsExistingDirectory(contentRootDir);
-        return getCheckedSubdirectories(contentRootDir);
+        return getSubdirectoriesAsCheckedProgramPath(contentRootDir);
     }
 
-    private static List<Path> getCheckedSubdirectories(Path dir) throws CommandExecutorException {
+    private static List<ProgramPath> getSubdirectoriesAsCheckedProgramPath(Path dir) throws CommandExecutorException {
+        List<ProgramPath> programPaths = new ArrayList<>();
         try {
             List<Path> programDirs = Nio2Helper.getActiveSubdirectories(dir);
             for (Path programDir : programDirs) {
                 String programName = programDir.getFileName().toString();
                 assertValidProgramName(programName);
+                programPaths.add(new ProgramPath(programDir));
             }
-            return programDirs;
+            return programPaths;
         } catch (IOException e) {
             throw new CommandExecutorException("Error when accessing file system. " + e.getMessage(), e);
         }

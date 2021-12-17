@@ -2,8 +2,10 @@ package org.mentalizr.contentManagerCli.executors;
 
 import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
+import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
 import org.mentalizr.contentManagerCli.ExecutionContext;
+import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.console.Console;
 
 import javax.json.bind.Jsonb;
@@ -28,16 +30,23 @@ public class ShowStructureExecutor extends AbstractExecutor implements CommandEx
     }
 
     @Override
-    protected boolean processProgram(ExecutionContext executionContext, Program program) {
-        if (program.isBuilt()) {
-            ProgramStructure programStructure = program.asProgramStructure();
+    protected boolean processProgram(ExecutionContext executionContext, ProgramPath programPath) {
+        try {
+            Program program = new Program(programPath.getPath());
+            if (program.hasHtmlDir()) {
+                ProgramStructure programStructure = program.asProgramStructure();
 
-            Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
-            System.out.println(jsonb.toJson(programStructure));
+                Jsonb jsonb = JsonbBuilder.create(new JsonbConfig().withFormatting(true));
+                System.out.println(jsonb.toJson(programStructure));
 
-            return true;
-        } else {
-            Console.errorProgramOut(program.getName(), "Program not built yet.");
+                return true;
+            } else {
+                Console.errorProgramOut(program.getName(), "Program not built yet.");
+                return false;
+            }
+        } catch (ContentManagerException e) {
+            Console.errorProgramOut(programPath.getProgramName(), e.getMessage());
+            if (executionContext.isStacktrace()) e.printStackTrace();
             return false;
         }
     }

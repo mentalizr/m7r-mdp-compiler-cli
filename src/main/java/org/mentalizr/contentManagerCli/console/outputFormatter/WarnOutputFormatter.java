@@ -3,12 +3,11 @@ package org.mentalizr.contentManagerCli.console.outputFormatter;
 import org.mentalizr.contentManagerCli.console.ConsoleConfig;
 import org.mentalizr.contentManagerCli.console.OutputFormatterNew;
 
-import java.io.PrintStream;
 import java.util.List;
 
-public class ErrorOutputFormatter extends OutputFormatterNew {
+public class WarnOutputFormatter extends OutputFormatterNew {
 
-    public ErrorOutputFormatter(ConsoleConfig consoleConfig) {
+    public WarnOutputFormatter(ConsoleConfig consoleConfig) {
         super(consoleConfig);
     }
 
@@ -18,12 +17,12 @@ public class ErrorOutputFormatter extends OutputFormatterNew {
 
     @Override
     protected String getPlainString(String message, List<String> messageParameters) {
-        return "[Error] " + message;
+        return "[Warn] " + message;
     }
 
     @Override
     protected String getColorizedString(String message, List<String> messageParameters) {
-        return getRedTag("Error") + " " + message;
+        return getYellowTag("Warn") + " " + message;
     }
 
 }

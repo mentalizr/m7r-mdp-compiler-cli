@@ -4,25 +4,18 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import org.mentalizr.contentManager.Program;
-import org.mentalizr.contentManager.buildHandler.BuildHandler;
-import org.mentalizr.contentManager.buildHandler.BuildHandlerException;
-import org.mentalizr.contentManager.buildHandler.BuildHandlerFactory;
-import org.mentalizr.contentManager.exceptions.ConsistencyException;
+import org.mentalizr.contentManager.exceptions.InconsistencyException;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.contentManager.fileHierarchy.exceptions.MediaNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManagerCli.ExecutionContext;
-import org.mentalizr.contentManagerCli.buildHandler.BuildHandlerExceptionHelper;
-import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandler;
-import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandlerFactory;
+import org.mentalizr.contentManagerCli.compilerHandler.*;
 import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.contentManagerCli.helper.ContentId;
 import org.mentalizr.contentManagerCli.helper.ContentIdException;
-import org.mentalizr.mdpCompiler.MDPCompiler;
 import org.mentalizr.mdpCompiler.MDPSyntaxError;
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class CheckExecutor implements CommandExecutor {
@@ -40,7 +33,7 @@ public class CheckExecutor implements CommandExecutor {
     private ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
         try {
             return new ExecutionContext(cliCall);
-        } catch (ConsistencyException e) {
+        } catch (InconsistencyException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
     }
@@ -80,21 +73,26 @@ public class CheckExecutor implements CommandExecutor {
     }
 
     private void checkMdpFile(MdpFile mdpFile, Program program, ExecutionContext executionContext) throws CommandExecutorException {
-        BuildHandlerFactory buildHandlerFactory = new MdpBuildHandlerFactory();
-        BuildHandler buildHandler = buildHandlerFactory.createBuildHandler(program, mdpFile);
+        CompilerHandler compilerHandler = new MdpCompilerHandler(program, mdpFile);
 
         try {
-            buildHandler.compile();
+            compilerHandler.compile();
             Console.okOut("[" + mdpFile.asPath().toAbsolutePath() + "]");
-        } catch (BuildHandlerException e) {
-            if (BuildHandlerExceptionHelper.hasMdpSyntaxErrorAsCause(e)) {
-                MDPSyntaxError mdpSyntaxError = BuildHandlerExceptionHelper.getCauseAsMDPSyntaxError(e);
+        } catch (CompilerHandlerException e) {
+            if (CompilerHandlerExceptionHelper.hasMdpSyntaxErrorAsCause(e)) {
+                MDPSyntaxError mdpSyntaxError = CompilerHandlerExceptionHelper.getCauseAsMDPSyntaxError(e);
                 Console.errorOut(MDPSyntaxError.getExtendedMessage(mdpFile.asPath(), mdpSyntaxError));
             } else {
                 Console.errorOut(e.getMessage());
             }
             if (executionContext.isStacktrace()) e.printStackTrace();
             throw new CommandExecutorException();
+        } catch (MediaNotFoundException e) {
+            // TODO rework
+            e.printStackTrace();
+        } catch (MDPSyntaxError mdpSyntaxError) {
+            // TODO rework
+            mdpSyntaxError.printStackTrace();
         }
     }
 

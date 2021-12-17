@@ -4,8 +4,10 @@ import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import org.mentalizr.contentManager.Program;
+import org.mentalizr.contentManager.Programs;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
+import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.console.Console;
 
 import java.nio.file.Path;
@@ -18,7 +20,7 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
         ExecutionContext executionContext = initExecutionContext(cliCall);
         ExecutionSummary executionSummary = new ExecutionSummary(getOperationName());
 
-        List<Path> programPaths = obtainProgramPaths(cliCall.getParameterList(), executionContext);
+        List<ProgramPath> programPaths = obtainProgramPaths(cliCall.getParameterList(), executionContext);
         cleanPrograms(executionContext, executionSummary, programPaths);
 
         Console.summaryOut(executionSummary);
@@ -42,24 +44,25 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
     }
 
     @Override
-    protected boolean processProgram(ExecutionContext executionContext, Program program) {
+    protected boolean processProgram(ExecutionContext executionContext, ProgramPath programPath) {
         throw new RuntimeException("Intentionally not implemented.");
     }
 
-    private void cleanPrograms(ExecutionContext executionContext, ExecutionSummary executionSummary, List<Path> programPaths) {
-        for (Path programPath : programPaths) {
+    private void cleanPrograms(ExecutionContext executionContext, ExecutionSummary executionSummary, List<ProgramPath> programPaths) {
+        for (ProgramPath programPath : programPaths) {
                 cleanProgram(executionContext, executionSummary, programPath);
         }
     }
 
-    private void cleanProgram(ExecutionContext executionContext, ExecutionSummary executionSummary, Path programPath) {
+    private void cleanProgram(ExecutionContext executionContext, ExecutionSummary executionSummary, ProgramPath programPath) {
         try {
-            Program.forceClean(programPath);
+            Programs.assertIsProgramDirByPlausibility(programPath.getPath());
+            Programs.forceClean(programPath.getPath());
 
-            Console.okProgramOut(programPath.getFileName().toString(), getMessageTextSuccess());
+            Console.okProgramOut(programPath.getProgramName(), getMessageTextSuccess());
             executionSummary.incSuccess();
         } catch (ContentManagerException e) {
-            Console.errorProgramOut(programPath.getFileName().toString(), getMessageTextFailed() + " Cause: " + e.getMessage());
+            Console.errorProgramOut(programPath.getProgramName(), getMessageTextFailed() + " Cause: " + e.getMessage());
             if (executionContext.isStacktrace()) Console.stacktrace(e);
             executionSummary.incFailed();
         }

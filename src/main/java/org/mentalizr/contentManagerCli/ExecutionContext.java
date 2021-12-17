@@ -1,9 +1,8 @@
 package org.mentalizr.contentManagerCli;
 
 import de.arthurpicht.cli.CliCall;
-import org.mentalizr.contentManager.exceptions.ConsistencyException;
+import org.mentalizr.contentManager.exceptions.InconsistencyException;
 import org.mentalizr.contentManager.helper.Nio2Helper;
-import org.mentalizr.contentManager.helper.PathAssertions;
 import org.mentalizr.contentManager.helper.PathConsistencyCheck;
 
 import java.nio.file.Path;
@@ -17,13 +16,13 @@ public class ExecutionContext {
     private final boolean verbose;
     private final boolean stacktrace;
 
-    public ExecutionContext(CliCall cliCall) throws ConsistencyException {
+    public ExecutionContext(CliCall cliCall) throws InconsistencyException {
         this.contentRootPath = this.obtainContentRootPath(cliCall);
         this.verbose = cliCall.getOptionParserResultGlobal().hasOption(OPTION_VERBOSE);
         this.stacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
     }
 
-    private Path obtainContentRootPath(CliCall cliCall) throws ConsistencyException {
+    private Path obtainContentRootPath(CliCall cliCall) throws InconsistencyException {
         if (cliCall.getOptionParserResultGlobal().hasOption(OPTION_CONTENT_ROOT)) {
             return obtainUserDefinedContentRootPath(cliCall);
         } else {
@@ -31,7 +30,7 @@ public class ExecutionContext {
         }
     }
 
-    private Path obtainUserDefinedContentRootPath(CliCall cliCall) throws ConsistencyException {
+    private Path obtainUserDefinedContentRootPath(CliCall cliCall) throws InconsistencyException {
         String contentRoot = cliCall.getOptionParserResultGlobal().getValue(OPTION_CONTENT_ROOT);
         Path contentRootPath =  Paths.get(contentRoot).toAbsolutePath();
         PathConsistencyCheck.assertIsExistingDirectory(contentRootPath);

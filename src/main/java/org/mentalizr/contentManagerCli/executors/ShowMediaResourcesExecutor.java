@@ -4,7 +4,9 @@ import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManagerCli.ExecutionContext;
-import org.mentalizr.contentManagerCli.buildHandler.MdpBuildHandlerFactory;
+import org.mentalizr.contentManagerCli.ProgramPath;
+import org.mentalizr.contentManagerCli.build.Build;
+import org.mentalizr.contentManagerCli.build.target.ReferencedMediaResources;
 import org.mentalizr.contentManagerCli.console.Console;
 
 import java.util.Set;
@@ -27,19 +29,20 @@ public class ShowMediaResourcesExecutor extends AbstractExecutor implements Comm
     }
 
     @Override
-    protected boolean processProgram(ExecutionContext executionContext, Program program) {
-        if (program.isBuilt()) {
-            try {
-                Set<String> referencedMediaResources = program.getReferencedMediaResources(new MdpBuildHandlerFactory());
+    protected boolean processProgram(ExecutionContext executionContext, ProgramPath programPath) {
+        try {
+            Program program = new Program(programPath.getPath());
+            if (program.hasHtmlDir()) {
+                Set<String> referencedMediaResources = Build.getReferencesMediaResources(program);
                 referencedMediaResources.forEach(System.out::println);
                 return true;
-            } catch (ContentManagerException e) {
-                Console.errorProgramOut(program.getName(), e.getMessage());
-                if (executionContext.isStacktrace()) e.printStackTrace();
+            } else {
+                Console.errorProgramOut(program.getName(), "Program not built yet.");
                 return false;
             }
-        } else {
-            Console.errorProgramOut(program.getName(), "Program not built yet.");
+        } catch (ContentManagerException e) {
+            Console.errorProgramOut(programPath.getProgramName(), e.getMessage());
+            if (executionContext.isStacktrace()) e.printStackTrace();
             return false;
         }
     }

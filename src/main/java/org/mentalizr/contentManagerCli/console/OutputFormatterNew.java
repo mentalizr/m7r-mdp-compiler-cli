@@ -12,6 +12,7 @@ public abstract class OutputFormatterNew {
 
     private static final AnsiFormat greenText = new AnsiFormat(Attribute.GREEN_TEXT(), Attribute.BOLD());
     private static final AnsiFormat redText = new AnsiFormat(Attribute.RED_TEXT(), Attribute.BOLD());
+    private static final AnsiFormat yellowText = new AnsiFormat(Attribute.YELLOW_TEXT(), Attribute.BOLD());
     private static final AnsiFormat blueText = new AnsiFormat(Attribute.BLUE_TEXT(), Attribute.BOLD());
 
     public enum Destination { OUT, ERROR }
@@ -89,6 +90,10 @@ public abstract class OutputFormatterNew {
 
     public static String getBlueText(String text) {
         return Ansi.colorize(text, blueText);
+    }
+
+    public static String getYellowTag(String tag) {
+        return Ansi.colorize("[" + tag + "]", yellowText);
     }
 
 //    public static void printRedTag(PrintStream printStream, String tag) {
