@@ -5,7 +5,6 @@ import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.contentManager.exceptions.InconsistencyException;
-import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramDirs;
 import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.console.Console;
@@ -26,7 +25,8 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
         processPrograms(executionContext, executionSummary, programPaths);
 
-        Console.summaryOut(executionSummary);
+        if (!executionContext.isOmitSummary())
+            Console.summaryOut(executionSummary);
 
         // TODO ???
         if (executionSummary.isFailed())
@@ -35,7 +35,8 @@ public abstract class AbstractExecutor implements CommandExecutor {
 
     protected ExecutionContext initExecutionContext(CliCall cliCall) throws CommandExecutorException {
         try {
-            return new ExecutionContext(cliCall);
+            ExecutionContextFactory executionContextFactory = getExecutionContextFactory();
+            return executionContextFactory.createExecutionContext(cliCall);
         } catch (InconsistencyException e) {
             throw new CommandExecutorException(e.getMessage(), e);
         }
@@ -75,6 +76,8 @@ public abstract class AbstractExecutor implements CommandExecutor {
     protected abstract String getMessageTextSuccess();
 
     protected abstract String getMessageTextFailed();
+
+    protected abstract ExecutionContextFactory getExecutionContextFactory();
 
     protected abstract boolean processProgram(ExecutionContext executionContext, ProgramPath programPath);
 

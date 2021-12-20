@@ -1,16 +1,19 @@
-package org.mentalizr.contentManagerCli.executors;
+package org.mentalizr.contentManagerCli.executors.build;
 
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
 import org.mentalizr.contentManager.validator.ValidationError;
-import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.build.Build;
 import org.mentalizr.contentManagerCli.build.BuildSummary;
 import org.mentalizr.contentManagerCli.build.FailedMdpFile;
 import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.contentManagerCli.executors.AbstractExecutor;
+import org.mentalizr.contentManagerCli.executors.DefaultExecutionContextFactory;
+import org.mentalizr.contentManagerCli.executors.ExecutionContext;
+import org.mentalizr.contentManagerCli.executors.ExecutionContextFactory;
 import org.mentalizr.mdpCompiler.MDPSyntaxError;
 
 import java.util.Set;
@@ -46,6 +49,11 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
     @Override
     protected String getMessageTextFailed() {
         return "Error building program.";
+    }
+
+    @Override
+    protected ExecutionContextFactory getExecutionContextFactory() {
+        return new DefaultExecutionContextFactory();
     }
 
     private void output(ProgramPath programPath, ExecutionContext executionContext, BuildSummary buildSummary) {

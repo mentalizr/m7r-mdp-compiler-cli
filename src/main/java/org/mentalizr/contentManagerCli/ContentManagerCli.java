@@ -16,7 +16,12 @@ import org.mentalizr.contentManager.exceptions.InconsistencyException;
 import org.mentalizr.contentManagerCli.console.Console;
 import org.mentalizr.contentManagerCli.console.ConsoleConfig;
 import org.mentalizr.contentManagerCli.console.ConsoleConfigCreator;
-import org.mentalizr.contentManagerCli.executors.*;
+import org.mentalizr.contentManagerCli.executors.build.BuildExecutor;
+import org.mentalizr.contentManagerCli.executors.check.CheckExecutor;
+import org.mentalizr.contentManagerCli.executors.clean.CleanExecutor;
+import org.mentalizr.contentManagerCli.executors.media.prune.MediaPruneExecutor;
+import org.mentalizr.contentManagerCli.executors.show.ShowStructureExecutor;
+import org.mentalizr.contentManagerCli.executors.media.ls.MediaListExecutor;
 import org.mentalizr.mdpCompiler.Const;
 
 public class ContentManagerCli {
@@ -28,6 +33,10 @@ public class ContentManagerCli {
     public static final String OPTION_LOGGER = "logger";
     public static final String OPTION_LOGGER_NAME = "logger_name";
     public static final String OPTION_NO_COLOR = "no_color";
+    public static final String OPTION_NO_SUMMARY = "no_summary";
+
+    public static final String OPTION_MEDIA_ABSOLUTE = "absolute";
+    public static final String OPTION_MEDIA_ORPHANED = "orphaned";
 
     private static Cli createCli() {
 
@@ -39,6 +48,7 @@ public class ContentManagerCli {
                 .add(new OptionBuilder().withShortName('s').withLongName("stacktrace").withDescription("Show stacktrace when running on error.").build(OPTION_STACKTRACE))
                 .add(new OptionBuilder().withLongName("silent").withDescription("Make no output to console.").build(OPTION_SILENT))
                 .add(new OptionBuilder().withLongName("no-color").withDescription("Omit colorization on console output.").build(OPTION_NO_COLOR))
+                .add(new OptionBuilder().withLongName("no-summary").withDescription("Omit summary on output.").build(OPTION_NO_SUMMARY))
                 .add(new OptionBuilder().withShortName('l').withLongName("logger").withDescription("Print output to logger.").build(OPTION_LOGGER))
                 .add(new OptionBuilder().withLongName("logger-name").withDescription("Name of logger. Default is 'org.mentalizr.contentManagerCli'.").build(OPTION_LOGGER_NAME));
 
@@ -55,13 +65,13 @@ public class ContentManagerCli {
         );
 
         commands.add(new CommandSequenceBuilder()
-                .addCommands("clean")
+                        .addCommands("clean")
 //                .withSpecificOptions(new Options()
 //                        .add(new OptionBuilder().withShortName('f').withLongName("force").withDescription("force cleaning program directory").build(OPTION__CLEAN__FORCE)))
-                .withParameters(new ParametersMin(0, "program", "programs to be cleaned"))
-                .withCommandExecutor(new CleanExecutor())
-                .withDescription("Cleans specified programs or all programs if none is specified.")
-                .build()
+                        .withParameters(new ParametersMin(0, "program", "programs to be cleaned"))
+                        .withCommandExecutor(new CleanExecutor())
+                        .withDescription("Cleans specified programs or all programs if none is specified.")
+                        .build()
         );
 
         commands.add(new CommandSequenceBuilder()
@@ -72,11 +82,24 @@ public class ContentManagerCli {
                 .build()
         );
 
+        Options mediaResourcesSpecificOptions = new Options()
+                .add(new OptionBuilder().withLongName("absolute").withShortName('a').withDescription("as absolute path").build(OPTION_MEDIA_ABSOLUTE))
+                .add(new OptionBuilder().withLongName("orphaned").withShortName('o').withDescription("show unreferenced (orphaned) media resources only").build(OPTION_MEDIA_ORPHANED));
+
         commands.add(new CommandSequenceBuilder()
-                .addCommands("show", "mediaResources")
-                .withParameters(new ParametersMin(0, "program", "programs to be shown"))
-                .withCommandExecutor(new ShowMediaResourcesExecutor())
+                .addCommands("media", "ls")
+                .withSpecificOptions(mediaResourcesSpecificOptions)
+                .withParameters(new ParametersMin(0, "program", "programs to be applied for listing media resources."))
+                .withCommandExecutor(new MediaListExecutor())
                 .withDescription("Lists all media resources that are referenced in specified programs.")
+                .build()
+        );
+
+        commands.add(new CommandSequenceBuilder()
+                .addCommands("media", "prune")
+                .withParameters(new ParametersMin(0, "program", "programs to be applied for pruning media resources."))
+                .withCommandExecutor(new MediaPruneExecutor())
+                .withDescription("Move all orphaned media resources of specified programs to program directory media-pruned.")
                 .build()
         );
 
@@ -90,7 +113,7 @@ public class ContentManagerCli {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("mentalizr content manager CLI\nhttps://github.com/mentalizr/m7r-content-manager-cli")
-                .withVersionByTag("0.1-SNAPSHOT", "2021-12-16", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
+                .withVersionByTag("0.1.0", "2021-12-20", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
                 .build("m7r-cm");
 
         return new CliBuilder()
@@ -131,7 +154,7 @@ public class ContentManagerCli {
                 Console.errorOut(e.getMessage());
             } else {
                 if (Strings.isSpecified(e.getMessage())) {
-                    Console.errorOut("CommandExecutorException: " + e.getMessage() );
+                    Console.errorOut("CommandExecutorException: " + e.getMessage());
                 }
             }
             if (showStacktrace) e.printStackTrace(consoleConfig.getErrorOut());

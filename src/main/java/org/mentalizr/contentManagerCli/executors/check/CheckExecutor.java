@@ -1,4 +1,4 @@
-package org.mentalizr.contentManagerCli.executors;
+package org.mentalizr.contentManagerCli.executors.check;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
@@ -8,9 +8,9 @@ import org.mentalizr.contentManager.exceptions.InconsistencyException;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.MediaNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.levels.contentFile.MdpFile;
-import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.compilerHandler.*;
 import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.contentManagerCli.executors.ExecutionContext;
 import org.mentalizr.contentManagerCli.helper.ContentId;
 import org.mentalizr.contentManagerCli.helper.ContentIdException;
 import org.mentalizr.mdpCompiler.MDPSyntaxError;

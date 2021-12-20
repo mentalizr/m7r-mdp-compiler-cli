@@ -1,12 +1,15 @@
-package org.mentalizr.contentManagerCli.executors;
+package org.mentalizr.contentManagerCli.executors.show;
 
 import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
-import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.contentManagerCli.executors.AbstractExecutor;
+import org.mentalizr.contentManagerCli.executors.DefaultExecutionContextFactory;
+import org.mentalizr.contentManagerCli.executors.ExecutionContext;
+import org.mentalizr.contentManagerCli.executors.ExecutionContextFactory;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -27,6 +30,11 @@ public class ShowStructureExecutor extends AbstractExecutor implements CommandEx
     @Override
     protected String getMessageTextFailed() {
         return "Error showing program structure.";
+    }
+
+    @Override
+    protected ExecutionContextFactory getExecutionContextFactory() {
+        return new DefaultExecutionContextFactory();
     }
 
     @Override

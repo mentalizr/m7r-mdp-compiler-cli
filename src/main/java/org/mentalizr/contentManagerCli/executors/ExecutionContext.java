@@ -1,4 +1,4 @@
-package org.mentalizr.contentManagerCli;
+package org.mentalizr.contentManagerCli.executors;
 
 import de.arthurpicht.cli.CliCall;
 import org.mentalizr.contentManager.exceptions.InconsistencyException;
@@ -14,11 +14,13 @@ public class ExecutionContext {
 
     private final Path contentRootPath;
     private final boolean verbose;
+    private final boolean omitSummary;
     private final boolean stacktrace;
 
     public ExecutionContext(CliCall cliCall) throws InconsistencyException {
         this.contentRootPath = this.obtainContentRootPath(cliCall);
         this.verbose = cliCall.getOptionParserResultGlobal().hasOption(OPTION_VERBOSE);
+        this.omitSummary = cliCall.getOptionParserResultGlobal().hasOption(OPTION_NO_SUMMARY);
         this.stacktrace = cliCall.getOptionParserResultGlobal().hasOption(OPTION_STACKTRACE);
     }
 
@@ -43,6 +45,10 @@ public class ExecutionContext {
 
     public boolean isVerbose() {
         return this.verbose;
+    }
+
+    public boolean isOmitSummary() {
+        return omitSummary;
     }
 
     public boolean isStacktrace() {

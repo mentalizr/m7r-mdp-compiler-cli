@@ -1,16 +1,14 @@
-package org.mentalizr.contentManagerCli.executors;
+package org.mentalizr.contentManagerCli.executors.clean;
 
 import de.arthurpicht.cli.CliCall;
 import de.arthurpicht.cli.CommandExecutor;
 import de.arthurpicht.cli.CommandExecutorException;
-import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.Programs;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.contentManagerCli.ExecutionContext;
 import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.console.Console;
+import org.mentalizr.contentManagerCli.executors.*;
 
-import java.nio.file.Path;
 import java.util.List;
 
 public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
@@ -41,6 +39,11 @@ public class CleanExecutor extends AbstractExecutor implements CommandExecutor {
     @Override
     protected String getMessageTextFailed() {
         return "Clean failed.";
+    }
+
+    @Override
+    protected ExecutionContextFactory getExecutionContextFactory() {
+        return new DefaultExecutionContextFactory();
     }
 
     @Override
