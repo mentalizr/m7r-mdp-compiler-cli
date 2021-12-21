@@ -91,7 +91,7 @@ public class ContentManagerCli {
                 .withSpecificOptions(mediaResourcesSpecificOptions)
                 .withParameters(new ParametersMin(0, "program", "programs to be applied for listing media resources."))
                 .withCommandExecutor(new MediaListExecutor())
-                .withDescription("Lists all media resources that are referenced in specified programs.")
+                .withDescription("Lists all media resources of specified programs. By default referenced ones.")
                 .build()
         );
 
@@ -113,7 +113,7 @@ public class ContentManagerCli {
 
         CliDescription cliDescription = new CliDescriptionBuilder()
                 .withDescription("mentalizr content manager CLI\nhttps://github.com/mentalizr/m7r-content-manager-cli")
-                .withVersionByTag("0.1.0", "2021-12-20", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
+                .withVersionByTag("0.1.0", "2021-12-21", "mdpc version " + Const.VERSION + " from " + Const.VERSION_DATE)
                 .build("m7r-cm");
 
         return new CliBuilder()

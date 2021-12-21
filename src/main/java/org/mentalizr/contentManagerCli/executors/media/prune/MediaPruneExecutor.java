@@ -3,7 +3,7 @@ package org.mentalizr.contentManagerCli.executors.media.prune;
 import de.arthurpicht.cli.CommandExecutor;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.contentManager.fileHierarchy.levels.contentRoot.MdpDir;
+import org.mentalizr.contentManager.fileHierarchy.levels.media.MediaDir;
 import org.mentalizr.contentManager.helper.Nio2Helper;
 import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.build.Build;
@@ -13,7 +13,6 @@ import org.mentalizr.contentManagerCli.executors.AbstractExecutor;
 import org.mentalizr.contentManagerCli.executors.DefaultExecutionContextFactory;
 import org.mentalizr.contentManagerCli.executors.ExecutionContext;
 import org.mentalizr.contentManagerCli.executors.ExecutionContextFactory;
-import org.mentalizr.contentManagerCli.executors.media.ls.MediaListExecutionContext;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,6 +63,7 @@ public class MediaPruneExecutor extends AbstractExecutor implements CommandExecu
                 return true;
             }
 
+            // TODO move prune functionality to m7r-content-manager
             Path mediaPrunedDir = obtainMediaPrunedDir(programPath);
             moveOrphanedMedia(orphanedMediaResources, programPath, mediaPrunedDir);
 
@@ -86,9 +86,9 @@ public class MediaPruneExecutor extends AbstractExecutor implements CommandExecu
     }
 
     private void moveOrphanedMedia(Set<String> orphanedMedia, ProgramPath programPath, Path mediaPrunedDir) throws IOException {
-        for (String media : orphanedMedia) {
-            Path source = programPath.getPath().resolve(MdpDir.DIR_NAME).resolve(media);
-            Path destination = mediaPrunedDir.resolve(media);
+        for (String mediaName : orphanedMedia) {
+            Path source = programPath.getPath().resolve(MediaDir.DIR_NAME).resolve(mediaName);
+            Path destination = mediaPrunedDir.resolve(mediaName);
             Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
         }
     }
