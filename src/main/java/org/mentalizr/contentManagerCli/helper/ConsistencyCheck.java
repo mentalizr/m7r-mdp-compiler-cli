@@ -1,10 +1,8 @@
 package org.mentalizr.contentManagerCli.helper;
 
 import de.arthurpicht.cli.CommandExecutorException;
-import org.mentalizr.contentManager.helper.Nio2Helper;
-import org.mentalizr.contentManager.helper.PathAssertionException;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ConsistencyCheck {
@@ -16,7 +14,7 @@ public class ConsistencyCheck {
 //    }
 
     public static void assertIsExistingDirectory(Path dir) throws CommandExecutorException {
-        if (!Nio2Helper.isExistingDir(dir))
+        if (!FileUtils.isExistingDirectory(dir))
             throw new CommandExecutorException("Directory not existing: ["
                     + dir.toAbsolutePath().toString() + "].");
     }

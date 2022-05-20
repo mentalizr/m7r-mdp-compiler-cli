@@ -1,10 +1,10 @@
 package org.mentalizr.contentManagerCli.executors.media.prune;
 
 import de.arthurpicht.cli.CommandExecutor;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.levels.media.MediaDir;
-import org.mentalizr.contentManager.helper.Nio2Helper;
 import org.mentalizr.contentManagerCli.ProgramPath;
 import org.mentalizr.contentManagerCli.build.Build;
 import org.mentalizr.contentManagerCli.consistency.NoOrphanedMediaResourcesValidator;
@@ -79,9 +79,7 @@ public class MediaPruneExecutor extends AbstractExecutor implements CommandExecu
 
     private Path obtainMediaPrunedDir(ProgramPath programPath) throws IOException {
         Path mediaPrunedDir = programPath.getPath().resolve("media-pruned");
-        if (!Nio2Helper.isExistingDir(mediaPrunedDir)) {
-            Files.createDirectory(mediaPrunedDir);
-        }
+        if (!FileUtils.isExistingDirectory(mediaPrunedDir)) Files.createDirectory(mediaPrunedDir);
         return mediaPrunedDir;
     }
 

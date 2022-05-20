@@ -1,8 +1,8 @@
 package org.mentalizr.contentManagerCli.executors;
 
 import de.arthurpicht.cli.CliCall;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.contentManager.exceptions.InconsistencyException;
-import org.mentalizr.contentManager.helper.Nio2Helper;
 import org.mentalizr.contentManager.helper.PathConsistencyCheck;
 
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public class ExecutionContext {
         if (cliCall.getOptionParserResultGlobal().hasOption(OPTION_CONTENT_ROOT)) {
             return obtainUserDefinedContentRootPath(cliCall);
         } else {
-            return Nio2Helper.getCurrentWorkingDir();
+            return FileUtils.getWorkingDir();
         }
     }
 

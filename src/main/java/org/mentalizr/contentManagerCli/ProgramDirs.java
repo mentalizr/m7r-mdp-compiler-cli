@@ -1,9 +1,9 @@
 package org.mentalizr.contentManagerCli;
 
 import de.arthurpicht.cli.CommandExecutorException;
+import de.arthurpicht.utils.io.assertions.PathAssertions;
+import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.contentManager.fileHierarchy.basics.Naming;
-import org.mentalizr.contentManager.helper.Nio2Helper;
-import org.mentalizr.contentManager.helper.PathAssertions;
 import org.mentalizr.contentManagerCli.helper.ConsistencyCheck;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class ProgramDirs {
     public static Path getProgramDir(Path contentRootDir, String programName) throws CommandExecutorException {
         assertValidProgramName(programName);
         Path programPath = contentRootDir.resolve(programName);
-        if (!Nio2Helper.isExistingDir(programPath))
+        if (!FileUtils.isExistingDirectory(programPath))
             throw new CommandExecutorException("Program directory not existing: [" + programPath + "].");
         PathAssertions.assertIsDirectSubdirectory(contentRootDir, programPath);
         return programPath;
@@ -39,7 +39,7 @@ public class ProgramDirs {
     private static List<ProgramPath> getSubdirectoriesAsCheckedProgramPath(Path dir) throws CommandExecutorException {
         List<ProgramPath> programPaths = new ArrayList<>();
         try {
-            List<Path> programDirs = Nio2Helper.getActiveSubdirectories(dir);
+            List<Path> programDirs = FileUtils.getSubdirectoriesNotEndingWithTilde(dir);
             for (Path programDir : programDirs) {
                 String programName = programDir.getFileName().toString();
                 assertValidProgramName(programName);
