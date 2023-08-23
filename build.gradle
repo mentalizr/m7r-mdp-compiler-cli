@@ -37,17 +37,19 @@ test {
     useJUnitPlatform()
 }
 
-task extractDependencies(type: Copy, dependsOn: jar) {
+tasks.register('extractDependencies', Copy) {
+    dependsOn jar
     from configurations.runtimeClasspath
     into "$buildDir/dependencies"
 }
 
-task fatJar(type: Jar, dependsOn: extractDependencies) {
+tasks.register('fatJar', Jar) {
+    dependsOn extractDependencies
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes 'Main-Class': 'org.mentalizr.contentManagerCli.ContentManagerCli'
         attributes 'Version': project.property("version")
-        attributes 'Build' : new Date().format('yyyyMMddHHmmss')
+        attributes 'Build': new Date().format('yyyyMMddHHmmss')
     }
     from {
         file("$buildDir/dependencies").listFiles().collect { zipTree(it) }
@@ -57,3 +59,9 @@ task fatJar(type: Jar, dependsOn: extractDependencies) {
     }
     destinationDirectory.set(file("$buildDir/fatjar"))
 }
+
+tasks.register('tool') {
+    dependsOn fatJar
+}
+
+defaultTasks 'fatJar'
