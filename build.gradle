@@ -5,12 +5,6 @@ plugins {
 group 'org.mentalizr'
 version = rootProject.file('version').text.trim()
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
-}
-
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
