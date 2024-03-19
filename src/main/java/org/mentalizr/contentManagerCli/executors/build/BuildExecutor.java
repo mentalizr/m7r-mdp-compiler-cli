@@ -74,7 +74,7 @@ public class BuildExecutor extends AbstractExecutor implements CommandExecutor {
 
     private void errorOut(ProgramPath programPath, BuildSummary buildSummary) {
         for (ValidationError validationError : buildSummary.getValidationErrors()) {
-            Console.errorOut(validationError.getMessage());
+            Console.errorOut(validationError.message());
         }
 
         for (FailedMdpFile failedMdpFile : buildSummary.getFailedMdpFiles()) {
