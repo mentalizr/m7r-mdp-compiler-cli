@@ -1,5 +1,6 @@
 package org.mentalizr.contentManagerCli.build.cleanBuild;
 
+import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.contentManager.Program;
 import org.mentalizr.contentManager.exceptions.ValidationException;
 import org.mentalizr.contentManager.validator.*;
@@ -9,10 +10,12 @@ import org.mentalizr.contentManagerCli.build.BuildSummary;
 import org.mentalizr.contentManagerCli.compileProgram.CompileProgram;
 import org.mentalizr.contentManagerCli.compileProgram.CompileProgramResult;
 import org.mentalizr.contentManagerCli.consistency.NoOrphanedMediaResourcesValidator;
+import org.mentalizr.contentManagerCli.consistency.ProgramLogoValidator;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CleanBuild {
 
@@ -34,7 +37,14 @@ public class CleanBuild {
         program.cleanHtmlDir();
         program.createHtmlDirSkeleton();
 
+        ProgramLogoValidator.validate(program);
+
         CompileProgramResult compileProgramResult = new CompileProgram(program).execute();
+
+        Set<String> referencedMediaResources = compileProgramResult.getReferencedMediaResources();
+        if (Strings.isSpecified(program.getProgramConf().getLogo())) {
+            referencedMediaResources.add(program.getProgramConf().getLogo());
+        }
 
         NoOrphanedMediaResourcesValidator noOrphanedMediaResourcesValidator
                 = NoOrphanedMediaResourcesValidator.create(program, compileProgramResult.getReferencedMediaResources());
@@ -52,7 +62,6 @@ public class CleanBuild {
         }
 
         return buildSummary;
-
     }
 
 }
