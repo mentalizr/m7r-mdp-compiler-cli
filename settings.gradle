@@ -1,5 +1,7 @@
 rootProject.name = 'm7r-content-manager-cli'
 
+apply from: "../../infra/m7r-common-config/libs.gradle"
+
 includeBuild('../m7r-content-manager')
 includeBuild('../m7r-service-objects')
 includeBuild('../m7r-mdp-compiler')

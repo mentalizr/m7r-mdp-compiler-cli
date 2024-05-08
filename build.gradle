@@ -11,20 +11,20 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.mentalizr:m7r-content-manager:0.1-SNAPSHOT'
-    implementation 'org.mentalizr:mdp-compiler:0.0.9-SNAPSHOT'
-    implementation 'org.mentalizr:m7r-service-objects:0.0.1-SNAPSHOT'
+    implementation libs.m7r.contentManager
+    implementation libs.m7r.mdpCompiler
+    implementation libs.m7r.serviceObjects
 
-    implementation 'com.github.arthurpicht:cli:0.1-beta1'
-    implementation 'com.github.arthurpicht:utils-core:1.9.0'
-    implementation 'com.github.arthurpicht:utils-io:0.0.15'
+    implementation libs.ap.cli
+    implementation libs.ap.utils.core
+    implementation libs.ap.utils.io
 
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
-    implementation 'org.glassfish.jersey.media:jersey-media-json-binding:2.32'
-    implementation group: 'com.diogonunes', name: 'JColor', version: '5.0.1'
+    implementation libs.jakarta.xml.bind.api
+    implementation libs.jersey.media.json.binding
+    implementation libs.jcolor
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly libs.junit.engine
 }
 
 test {
